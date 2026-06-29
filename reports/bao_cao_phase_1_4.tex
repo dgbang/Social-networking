@@ -1,0 +1,382 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T5]{fontenc}
+\usepackage[vietnamese]{babel}
+\usepackage{geometry}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{xcolor}
+
+\geometry{
+  left=2.5cm,
+  right=2.0cm,
+  top=2.5cm,
+  bottom=2.5cm
+}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  urlcolor=blue
+}
+
+\setlist[itemize]{noitemsep, topsep=4pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+\begin{document}
+
+\begin{titlepage}
+  \centering
+  {\Large \textbf{BÁO CÁO TIẾN ĐỘ DỰ ÁN}\par}
+  \vspace{0.5cm}
+  {\large \textbf{Social Networking Promax}\par}
+  \vspace{1.5cm}
+  {\large Nội dung báo cáo: Các chức năng đã hoàn thành từ Phase 1 đến Phase 4\par}
+  \vfill
+  \begin{flushleft}
+    \textbf{Sinh viên:} \dotfill \\
+    \textbf{Mã sinh viên:} \dotfill \\
+    \textbf{Lớp:} \dotfill \\
+    \textbf{Giảng viên hướng dẫn:} \dotfill
+  \end{flushleft}
+  \vfill
+  {\large \today\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Tổng quan dự án}
+
+Social Networking Promax là một hệ thống mạng xã hội nền web, được xây dựng theo mô hình client--server. Dự án tập trung vào các chức năng cốt lõi của một mạng xã hội như đăng ký, đăng nhập, quản lý hồ sơ cá nhân, kết bạn, đăng bài, tương tác bài viết và chia sẻ story.
+
+Trong phạm vi báo cáo này, nội dung trình bày không đi theo từng tuần triển khai mà tập trung vào các kết quả đã hoàn thành từ Phase 1 đến Phase 4. Các phần đã làm bao gồm:
+
+\begin{itemize}
+  \item Xây dựng nền tảng backend, frontend, database và môi trường chạy bằng Docker.
+  \item Hoàn thiện hệ thống xác thực người dùng.
+  \item Xây dựng chức năng hồ sơ cá nhân, upload ảnh đại diện, ảnh bìa và quản lý bạn bè.
+  \item Xây dựng chức năng bài viết, bảng tin, bình luận, cảm xúc và chia sẻ.
+  \item Xây dựng chức năng story với cơ chế hết hạn sau 24 giờ.
+\end{itemize}
+
+\section{Công nghệ sử dụng}
+
+Dự án sử dụng các công nghệ chính sau:
+
+\begin{longtable}{|p{4cm}|p{10cm}|}
+\hline
+\textbf{Thành phần} & \textbf{Công nghệ sử dụng} \\
+\hline
+Frontend & React, Vite, React Router, Redux Toolkit, Axios, Material UI \\
+\hline
+Backend & Node.js, Express.js, Sequelize ORM \\
+\hline
+Cơ sở dữ liệu & PostgreSQL \\
+\hline
+Xác thực & JSON Web Token, refresh token, bcrypt \\
+\hline
+Upload media & Multer, Cloudinary \\
+\hline
+Realtime foundation & Socket.IO foundation đã được chuẩn bị cho các phase sau \\
+\hline
+Triển khai môi trường & Docker, Docker Compose, Nginx \\
+\hline
+Kiểm thử & Jest/Supertest cho các service và API quan trọng \\
+\hline
+\end{longtable}
+
+\section{Các chức năng đã hoàn thành}
+
+\subsection{Nền tảng hệ thống và xác thực người dùng}
+
+Phần nền tảng của dự án đã được xây dựng hoàn chỉnh để làm cơ sở cho các chức năng mạng xã hội phía sau. Hệ thống đã có cấu trúc thư mục riêng cho client, server và nginx; đồng thời có cấu hình Docker Compose để chạy các thành phần chính gồm PostgreSQL, backend và frontend.
+
+Ở phía backend, dự án đã hoàn thành các thành phần nền tảng:
+
+\begin{itemize}
+  \item Khởi tạo server Express với cấu trúc controller, service, route, middleware và model rõ ràng.
+  \item Cấu hình các middleware cơ bản như CORS, Helmet, Morgan và xử lý JSON request.
+  \item Xây dựng error handler dùng chung cho toàn bộ API.
+  \item Xây dựng response helper để chuẩn hóa định dạng phản hồi API.
+  \item Cấu hình Sequelize kết nối PostgreSQL.
+  \item Tạo migration và model cho người dùng.
+  \item Tạo health endpoint để kiểm tra trạng thái server.
+\end{itemize}
+
+Hệ thống xác thực người dùng đã được triển khai với các chức năng chính:
+
+\begin{itemize}
+  \item Đăng ký tài khoản mới.
+  \item Đăng nhập bằng email hoặc thông tin tài khoản hợp lệ.
+  \item Mã hóa mật khẩu bằng bcrypt trước khi lưu vào cơ sở dữ liệu.
+  \item Sinh access token và refresh token bằng JWT.
+  \item Lưu refresh token dạng hash trong bảng phiên đăng nhập.
+  \item Làm mới access token thông qua refresh token.
+  \item Đăng xuất và thu hồi phiên đăng nhập.
+  \item Lấy thông tin người dùng hiện tại.
+  \item Quên mật khẩu và đặt lại mật khẩu.
+  \item Middleware bảo vệ route yêu cầu đăng nhập.
+\end{itemize}
+
+Ở phía frontend, dự án đã hoàn thành luồng xác thực cơ bản:
+
+\begin{itemize}
+  \item Trang đăng nhập.
+  \item Trang đăng ký.
+  \item Trang quên mật khẩu.
+  \item Trang đặt lại mật khẩu.
+  \item Protected Route để chặn truy cập khi chưa đăng nhập.
+  \item Lưu và đồng bộ trạng thái đăng nhập bằng Redux Toolkit.
+  \item Axios instance tự động gắn token khi gọi API.
+  \item Điều hướng người dùng sau khi đăng nhập hoặc đăng xuất.
+\end{itemize}
+
+\subsection{Hồ sơ cá nhân và quan hệ bạn bè}
+
+Dự án đã hoàn thành nhóm chức năng hồ sơ người dùng, cho phép người dùng quản lý thông tin cá nhân và xem thông tin của người dùng khác trong hệ thống.
+
+Các chức năng hồ sơ đã làm gồm:
+
+\begin{itemize}
+  \item Xem hồ sơ cá nhân của người dùng đang đăng nhập.
+  \item Cập nhật thông tin cá nhân như họ tên, tiểu sử và các thông tin hiển thị.
+  \item Xem hồ sơ của người dùng khác.
+  \item Tìm kiếm người dùng theo username hoặc họ tên.
+  \item Không hiển thị các thông tin nhạy cảm như mật khẩu, token hoặc email của người dùng khác.
+  \item Upload ảnh đại diện và ảnh bìa.
+  \item Cắt ảnh trước khi upload để phù hợp với giao diện.
+  \item Lưu URL và public id của ảnh trên Cloudinary để quản lý media.
+\end{itemize}
+
+Về chức năng bạn bè, hệ thống đã hoàn thành các nghiệp vụ chính:
+
+\begin{itemize}
+  \item Gửi lời mời kết bạn.
+  \item Chấp nhận lời mời kết bạn.
+  \item Từ chối lời mời kết bạn.
+  \item Hủy kết bạn.
+  \item Lấy danh sách bạn bè.
+  \item Lấy danh sách lời mời kết bạn đang chờ.
+  \item Gợi ý người dùng có thể kết bạn.
+  \item Kiểm tra để không cho người dùng kết bạn với chính mình.
+  \item Kiểm tra tránh tạo lời mời kết bạn trùng lặp.
+\end{itemize}
+
+Ở giao diện người dùng, dự án đã có:
+
+\begin{itemize}
+  \item Trang hồ sơ cá nhân.
+  \item Modal chỉnh sửa hồ sơ.
+  \item Thành phần hiển thị ảnh đại diện, ảnh bìa và thông tin cá nhân.
+  \item Trang bạn bè với các nhóm dữ liệu như danh sách bạn bè, lời mời và gợi ý.
+  \item User card hiển thị thông tin người dùng và các nút thao tác phù hợp.
+\end{itemize}
+
+\subsection{Bài viết, bảng tin và tương tác mạng xã hội}
+
+Dự án đã hoàn thành nhóm chức năng bài viết và bảng tin, đây là phần lõi của mạng xã hội. Người dùng có thể tạo nội dung, xem bài viết, tương tác và chia sẻ bài viết.
+
+Các chức năng bài viết đã triển khai gồm:
+
+\begin{itemize}
+  \item Tạo bài viết mới với nội dung văn bản.
+  \item Upload nhiều media cho một bài viết.
+  \item Lưu media dưới dạng URL, public id và loại media.
+  \item Thiết lập quyền riêng tư cho bài viết gồm public, friends và private.
+  \item Xem chi tiết bài viết.
+  \item Chỉnh sửa bài viết của chính mình.
+  \item Xóa bài viết của chính mình.
+  \item Ẩn bài viết đã xóa khỏi bảng tin và trang chi tiết.
+\end{itemize}
+
+Phần bảng tin đã được xây dựng với các yêu cầu quan trọng:
+
+\begin{itemize}
+  \item Lấy danh sách bài viết theo quyền xem của người dùng.
+  \item Hiển thị bài viết public.
+  \item Hiển thị bài viết friends của bạn bè.
+  \item Hiển thị bài viết của chính người dùng.
+  \item Không hiển thị bài viết private cho người không có quyền.
+  \item Sắp xếp bài viết theo thời gian mới nhất.
+  \item Hỗ trợ phân trang dạng cursor.
+  \item Include thông tin người đăng và các bộ đếm tương tác.
+\end{itemize}
+
+Các chức năng tương tác với bài viết đã hoàn thành gồm:
+
+\begin{itemize}
+  \item Thả cảm xúc cho bài viết.
+  \item Toggle cùng một cảm xúc để bỏ cảm xúc.
+  \item Đổi loại cảm xúc đã thả.
+  \item Cập nhật số lượng cảm xúc.
+  \item Bình luận bài viết.
+  \item Trả lời bình luận thông qua parent comment.
+  \item Xóa bình luận theo quyền.
+  \item Cập nhật số lượng bình luận.
+  \item Chia sẻ bài viết bằng cách tạo bài viết mới liên kết tới bài gốc.
+  \item Cập nhật số lượng chia sẻ.
+\end{itemize}
+
+Ở phía frontend, dự án đã hoàn thành các thành phần giao diện chính:
+
+\begin{itemize}
+  \item Component tạo bài viết.
+  \item Component hiển thị bài viết.
+  \item Hiển thị media của bài viết dạng lưới.
+  \item Khu vực bình luận.
+  \item Modal chia sẻ bài viết.
+  \item Modal hoặc trang xem chi tiết bài viết.
+  \item Hiển thị bài viết trên bảng tin.
+  \item Hiển thị bài viết trên trang hồ sơ.
+  \item Các trạng thái loading, empty state và error state cơ bản.
+\end{itemize}
+
+\subsection{Story}
+
+Chức năng story đã được triển khai để người dùng có thể đăng nội dung ngắn hạn tương tự các mạng xã hội phổ biến. Story có thời gian tồn tại 24 giờ và được hiển thị cho người dùng hiện tại cùng bạn bè phù hợp.
+
+Các chức năng backend của story đã hoàn thành gồm:
+
+\begin{itemize}
+  \item Tạo model và migration cho Story.
+  \item Tạo model và migration cho StoryView.
+  \item Thiết lập quan hệ giữa người dùng, story và lượt xem story.
+  \item Tạo story với media ảnh hoặc video.
+  \item Upload media story lên Cloudinary.
+  \item Lưu text overlay nếu người dùng nhập.
+  \item Thiết lập thời gian hết hạn mặc định sau 24 giờ.
+  \item Lấy story feed của người dùng hiện tại và bạn bè.
+  \item Chỉ trả về các story chưa hết hạn.
+  \item Group story theo từng người dùng.
+  \item Đánh dấu story đã xem.
+  \item Đảm bảo một người dùng không tạo nhiều bản ghi view trùng cho cùng một story.
+  \item Xóa story bởi chủ sở hữu.
+  \item Cấu hình job tự động xử lý story hết hạn.
+\end{itemize}
+
+Ở phía frontend, dự án đã hoàn thành các thành phần:
+
+\begin{itemize}
+  \item StoryBar hiển thị trên trang chính.
+  \item CreateStoryModal để tạo story mới.
+  \item StoryViewer dạng toàn màn hình.
+  \item Thanh tiến trình khi xem story.
+  \item Chuyển story tiếp theo hoặc quay lại story trước.
+  \item Đóng trình xem story.
+  \item Hiển thị trạng thái đã xem hoặc chưa xem.
+  \item Giao diện responsive cho desktop và mobile.
+\end{itemize}
+
+\section{Cơ sở dữ liệu đã xây dựng}
+
+Đến hết Phase 4, hệ thống đã có các nhóm bảng dữ liệu chính:
+
+\begin{longtable}{|p{4cm}|p{10cm}|}
+\hline
+\textbf{Bảng} & \textbf{Mục đích} \\
+\hline
+Users & Lưu thông tin tài khoản, thông tin hồ sơ và trạng thái người dùng. \\
+\hline
+AuthSessions & Quản lý phiên đăng nhập và refresh token dạng hash. \\
+\hline
+Friendships & Lưu quan hệ bạn bè và trạng thái lời mời kết bạn. \\
+\hline
+Posts & Lưu bài viết, nội dung, media, quyền riêng tư và bộ đếm tương tác. \\
+\hline
+Comments & Lưu bình luận và trả lời bình luận của bài viết. \\
+\hline
+Likes & Lưu cảm xúc của người dùng đối với bài viết. \\
+\hline
+Stories & Lưu story, media, text overlay và thời gian hết hạn. \\
+\hline
+StoryViews & Lưu trạng thái người dùng đã xem story. \\
+\hline
+\end{longtable}
+
+\section{API và xử lý nghiệp vụ}
+
+Các API đã được tổ chức theo từng nhóm chức năng rõ ràng:
+
+\begin{itemize}
+  \item Nhóm API xác thực: đăng ký, đăng nhập, đăng xuất, refresh token, lấy thông tin người dùng hiện tại, quên mật khẩu và đặt lại mật khẩu.
+  \item Nhóm API người dùng: xem hồ sơ, cập nhật hồ sơ, tìm kiếm người dùng, upload avatar và cover photo.
+  \item Nhóm API bạn bè: gửi lời mời, chấp nhận, từ chối, hủy kết bạn, lấy danh sách bạn bè, lời mời và gợi ý.
+  \item Nhóm API bài viết: tạo, xem, sửa, xóa bài viết, lấy bảng tin, upload media.
+  \item Nhóm API tương tác: thả cảm xúc, bình luận, trả lời bình luận, xóa bình luận và chia sẻ bài viết.
+  \item Nhóm API story: tạo story, lấy story feed, đánh dấu đã xem và xóa story.
+\end{itemize}
+
+Các nghiệp vụ quan trọng đã được xử lý ở backend thay vì chỉ xử lý ở frontend, bao gồm:
+
+\begin{itemize}
+  \item Kiểm tra quyền đăng nhập bằng middleware.
+  \item Kiểm tra quyền xem bài viết theo privacy.
+  \item Kiểm tra quyền sửa hoặc xóa tài nguyên theo chủ sở hữu.
+  \item Không trả về dữ liệu nhạy cảm của người dùng.
+  \item Cập nhật các bộ đếm như likesCount, commentsCount và sharesCount.
+  \item Kiểm tra quan hệ bạn bè khi lấy feed bài viết hoặc story.
+  \item Kiểm tra story còn hạn trước khi hiển thị.
+\end{itemize}
+
+\section{Giao diện người dùng}
+
+Giao diện người dùng đã được xây dựng theo hướng ứng dụng mạng xã hội hiện đại, có các trang và thành phần chính:
+
+\begin{itemize}
+  \item Trang đăng nhập, đăng ký, quên mật khẩu và đặt lại mật khẩu.
+  \item Trang dashboard hoặc bảng tin chính.
+  \item Thanh điều hướng có trạng thái người dùng.
+  \item Trang hồ sơ cá nhân.
+  \item Trang bạn bè.
+  \item Khu vực tạo bài viết.
+  \item Danh sách bài viết trên bảng tin.
+  \item Trang hoặc modal xem chi tiết bài viết.
+  \item Khu vực bình luận và chia sẻ bài viết.
+  \item StoryBar và StoryViewer.
+\end{itemize}
+
+Các thành phần giao diện đã có xử lý trạng thái cơ bản như loading, lỗi, dữ liệu rỗng, submit form và cập nhật dữ liệu sau khi thao tác thành công.
+
+\section{Kiểm thử và chất lượng}
+
+Dự án đã có các testcase và kiểm thử backend cho các luồng quan trọng. Các nhóm kiểm thử đã được chuẩn bị và triển khai xoay quanh:
+
+\begin{itemize}
+  \item Health check của backend.
+  \item Xử lý public user để tránh lộ dữ liệu nhạy cảm.
+  \item Nghiệp vụ bạn bè.
+  \item Nghiệp vụ bài viết, feed, reaction, comment và share.
+  \item Nghiệp vụ story, quyền xem, đánh dấu đã xem và xóa story.
+\end{itemize}
+
+Bên cạnh đó, dự án có tài liệu yêu cầu, thiết kế và testcase riêng cho từng phase. Điều này giúp việc kiểm tra, mở rộng và bảo trì chức năng rõ ràng hơn.
+
+\section{Kết quả đạt được}
+
+Tính đến hết Phase 4, dự án đã đạt được các kết quả chính sau:
+
+\begin{itemize}
+  \item Có nền tảng full-stack hoàn chỉnh gồm React frontend, Express backend và PostgreSQL database.
+  \item Có môi trường chạy bằng Docker phục vụ phát triển và kiểm thử.
+  \item Người dùng có thể đăng ký, đăng nhập, đăng xuất và quản lý phiên đăng nhập.
+  \item Người dùng có thể cập nhật hồ sơ, ảnh đại diện, ảnh bìa và tìm kiếm người dùng khác.
+  \item Người dùng có thể kết bạn, nhận lời mời, từ chối lời mời và hủy kết bạn.
+  \item Người dùng có thể tạo bài viết, xem bảng tin, thả cảm xúc, bình luận và chia sẻ.
+  \item Bảng tin đã tôn trọng quyền riêng tư của bài viết và quan hệ bạn bè.
+  \item Người dùng có thể tạo và xem story trong thời hạn 24 giờ.
+  \item Giao diện đã có các màn hình chính của một mạng xã hội cơ bản.
+  \item Backend đã có kiểm thử cho các nghiệp vụ quan trọng.
+\end{itemize}
+
+\section{Kết luận}
+
+Sau khi hoàn thành các nội dung từ Phase 1 đến Phase 4, dự án Social Networking Promax đã có nền tảng đủ tốt cho một ứng dụng mạng xã hội cơ bản. Các chức năng chính như xác thực, hồ sơ cá nhân, bạn bè, bài viết, bảng tin, tương tác và story đã được triển khai đầy đủ ở cả backend và frontend.
+
+Các phần đã hoàn thành tạo tiền đề để tiếp tục mở rộng các chức năng nâng cao hơn như chat realtime, gọi video, thông báo và triển khai production trong các giai đoạn tiếp theo.
+
+\end{document}

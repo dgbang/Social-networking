@@ -11,10 +11,10 @@ async function request(req, res) {
 }
 
 async function accept(req, res) {
-  const friendship = await friendService.acceptRequest(req.user.id, req.params.userId);
+  const { friendship, conversation } = await friendService.acceptRequest(req.user.id, req.params.userId);
   return success(res, req, {
     message: "Friend request accepted",
-    data: { friendship }
+    data: { friendship, conversation }
   });
 }
 

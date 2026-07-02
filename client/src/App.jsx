@@ -1,5 +1,7 @@
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Navbar from "./components/Common/Navbar.jsx";
+import { CallProvider } from "./context/CallContext.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import OAuthCallbackPage from "./pages/OAuthCallbackPage.jsx";
@@ -14,6 +16,7 @@ import ProtectedRoute from "./routes/ProtectedRoute.jsx";
 
 function App() {
   const location = useLocation();
+  const accessToken = useSelector((state) => state.auth.accessToken);
   const authPaths = ["/login", "/register", "/forgot-password", "/oauth/callback"];
   const isTokenAuthPath = location.pathname.startsWith("/reset-password/");
   const isAuthScreen = authPaths.includes(location.pathname) || isTokenAuthPath;
@@ -24,7 +27,7 @@ function App() {
     ? "w-full max-w-[1040px] p-0"
     : "mx-auto w-full max-w-[1460px] px-[clamp(12px,2vw,18px)] py-4 pb-7 max-[560px]:p-3";
 
-  return (
+  const page = (
     <div className={rootClassName}>
       {isAuthScreen ? null : <Navbar />}
       <main className={mainClassName}>
@@ -87,6 +90,8 @@ function App() {
       </main>
     </div>
   );
+
+  return accessToken && !isAuthScreen ? <CallProvider>{page}</CallProvider> : page;
 }
 
 export default App;

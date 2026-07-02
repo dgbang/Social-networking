@@ -93,9 +93,9 @@ Phase 5 test cac nhom chuc nang:
 | ID | Screen | Scenario | Steps | Expected Result |
 | --- | --- | --- | --- | --- |
 | P05-UI-001 | Navbar | Messenger link | Login | Chat icon/link di toi `/messenger` |
-| P05-UI-002 | Messenger | Empty state | User chua co conversation | Hien empty state va nut tao chat |
-| P05-UI-003 | Create modal | Tao private chat | Chon friend, tao | Conversation duoc select |
-| P05-UI-004 | Create modal | Tao group chat | Chon 2 friends, dat ten | Group duoc select |
+| P05-UI-002 | Messenger | Empty state | User chua co conversation | Hien empty state, khong co nut tao chat moi |
+| P05-UI-003 | Profile CTA | Nhan tin voi ban be | Tu profile friend, bam Nhan tin | Tao/reuse private conversation va mo `/messenger?conversationId=...` |
+| P05-UI-004 | Accept friend | Chap nhan ket ban | Accept request | Private conversation giua hai user duoc tao/reuse |
 | P05-UI-005 | ChatWindow | Send text | Nhap text, bam send | Bubble cua minh hien ben phai, realtime append |
 | P05-UI-006 | ChatWindow | Receive text | User khac gui | Bubble ben trai hien khong refresh |
 | P05-UI-007 | ChatWindow | Reply | Chon reply tren bubble | ReplyBar hien, message moi co preview |

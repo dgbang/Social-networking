@@ -1,7 +1,8 @@
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
-import { Avatar, Box, Button, IconButton, Paper, Stack, TextField, Typography } from "@mui/material";
+import VideocamRoundedIcon from "@mui/icons-material/VideocamRounded";
+import { Avatar, Box, Button, IconButton, Paper, Stack, TextField, Tooltip, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { ChatMessagesSkeleton } from "../Common/Skeletons.jsx";
 import MessageBubble from "./MessageBubble.jsx";
@@ -20,6 +21,7 @@ function ChatWindow({
   onDelete,
   onTyping,
   onStopTyping,
+  onStartCall,
   replyTarget,
   onCancelReply
 }) {
@@ -39,6 +41,8 @@ function ChatWindow({
       </Paper>
     );
   }
+
+  const otherMember = conversation.type === "private" ? conversation.members.find((member) => member.userId !== currentUser?.id) : null;
 
   function handleChange(event) {
     setContent(event.target.value);
@@ -69,6 +73,17 @@ function ChatWindow({
             {conversation.members.length} members
           </Typography>
         </Box>
+        {otherMember && onStartCall ? (
+          <Tooltip title="Video call">
+            <IconButton
+              onClick={() => onStartCall(otherMember)}
+              aria-label="Start video call"
+              className="!h-10 !w-10 !rounded-full !bg-[#1877F2] !text-white hover:!bg-[#DDDDDD]"
+            >
+              <VideocamRoundedIcon />
+            </IconButton>
+          </Tooltip>
+        ) : null}
       </Stack>
 
       <Box className="flex flex-1 flex-col gap-2.5 overflow-y-auto bg-[radial-gradient(circle_at_top_left,rgba(24,119,242,0.08),transparent_26%),#f8fafc] p-4 max-[560px]:px-2.5 max-[560px]:py-3">
@@ -83,6 +98,7 @@ function ChatWindow({
             key={message.id}
             message={message}
             currentUser={currentUser}
+            conversationType={conversation.type}
             onReply={onReply}
             onDelete={onDelete}
           />

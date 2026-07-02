@@ -26,7 +26,7 @@ export async function sendFriendRequest(userId) {
 
 export async function acceptFriendRequest(userId) {
   const res = await api.put(`/friends/accept/${userId}`);
-  return res.data.data.friendship;
+  return res.data.data;
 }
 
 export async function rejectFriendRequest(userId) {

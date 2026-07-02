@@ -44,7 +44,7 @@ Phase 5 them chat realtime tren kien truc Express + Sequelize + React:
 - `client/src/components/chat/ConversationList.jsx`
 - `client/src/components/chat/ChatWindow.jsx`
 - `client/src/components/chat/MessageBubble.jsx`
-- `client/src/components/chat/CreateConversationModal.jsx`
+- `client/src/components/chat/CreateConversationModal.jsx`: legacy/internal group chat UI, khong render trong Messenger theo UX moi.
 - `client/src/components/Common/Navbar.jsx`: link Messenger.
 - `client/src/App.jsx`: route `/messenger`.
 
@@ -254,7 +254,7 @@ Server -> Client:
 ### ConversationList
 
 - Hien avatar/name, last message preview, unread badge, online dot.
-- Nut tao chat/private/group.
+- Khong hien nut tao chat moi; private chat bat dau tu accept friend hoac nut nhan tin tren profile ban be.
 - Sort theo lastMessageAt.
 
 ### ChatWindow
@@ -313,7 +313,8 @@ Server -> Client:
 7. Tao frontend API/socket helpers.
 8. Tao `/messenger` UI components.
 9. Gan navbar link Messenger.
-10. Chay backend tests va frontend build.
+10. Gan profile message CTA va auto-create/reuse private chat sau accept friend.
+11. Chay backend tests va frontend build.
 
 ## Anh huong testcase
 

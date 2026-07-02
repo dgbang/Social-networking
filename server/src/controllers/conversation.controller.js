@@ -12,7 +12,7 @@ async function list(req, res) {
 async function create(req, res) {
   const conversation = await chatService.createConversation(req.user.id, req.body);
   return success(res, req, {
-    status: 201,
+    status: conversation.__created === false ? 200 : 201,
     message: "Conversation ready",
     data: { conversation }
   });
@@ -40,15 +40,10 @@ async function createMessage(req, res) {
   if (io) {
     const eventName = message.replyToId ? "new_reply" : "new_message";
     const memberIds = await chatService.getConversationMemberIds(message.conversationId);
-    io.to(`conversation:${message.conversationId}`).emit(eventName, {
+    const rooms = [`conversation:${message.conversationId}`, ...memberIds.map((memberId) => `user:${memberId}`)];
+    io.to(rooms).emit(eventName, {
       conversationId: message.conversationId,
       message
-    });
-    memberIds.forEach((memberId) => {
-      io.to(`user:${memberId}`).emit(eventName, {
-        conversationId: message.conversationId,
-        message
-      });
     });
   }
   return success(res, req, {

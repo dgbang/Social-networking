@@ -25,13 +25,14 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { searchUsers } from "../../api/userApi.js";
 import { logoutUser } from "../../store/authSlice.js";
 
 function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const user = useSelector((state) => state.auth.user);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
@@ -61,12 +62,16 @@ function Navbar() {
   }
 
   const navItems = [
-    { label: "Home", to: "/dashboard", icon: <DashboardRoundedIcon /> },
-    { label: "Friends", to: "/friends", icon: <PeopleAltRoundedIcon /> },
-    { label: "Messenger", to: "/messenger", icon: <ChatBubbleRoundedIcon /> },
-    { label: "Groups", to: "/friends", icon: <GroupsRoundedIcon /> },
-    { label: "Market", to: "/dashboard", icon: <StorefrontRoundedIcon /> }
+    { label: "Home", to: "/dashboard", icon: <DashboardRoundedIcon />, activePaths: ["/dashboard", "/post"] },
+    { label: "Friends", to: "/friends", icon: <PeopleAltRoundedIcon />, activePaths: ["/friends"] },
+    { label: "Messenger", to: "/messenger", icon: <ChatBubbleRoundedIcon />, activePaths: ["/messenger"] },
+    { label: "Groups", to: "/friends", icon: <GroupsRoundedIcon />, activePaths: [] },
+    { label: "Market", to: "/dashboard", icon: <StorefrontRoundedIcon />, activePaths: [] }
   ];
+
+  function isActive(item) {
+    return item.activePaths.some((path) => location.pathname === path || location.pathname.startsWith(`${path}/`));
+  }
 
   return (
     <AppBar
@@ -134,18 +139,24 @@ function Navbar() {
 
         {user ? (
           <Box component="nav" className="hidden min-w-0 justify-center gap-1.5 min-[1041px]:flex">
-            {navItems.map((item) => (
-              <Tooltip key={item.label} title={item.label}>
-                <IconButton
-                  component={Link}
-                  to={item.to}
-                  aria-label={item.label}
-                  className="!h-11 !w-[min(104px,12vw)] !rounded-lg !text-[#65676b] hover:!bg-[#f0f2f5] hover:!text-[#1877f2]"
-                >
-                  {item.icon}
-                </IconButton>
-              </Tooltip>
-            ))}
+            {navItems.map((item) => {
+              const active = isActive(item);
+              return (
+                <Tooltip key={item.label} title={item.label}>
+                  <IconButton
+                    component={Link}
+                    to={item.to}
+                    aria-label={item.label}
+                    aria-current={active ? "page" : undefined}
+                    className={`!relative !h-11 !w-[min(104px,12vw)] !rounded-lg hover:!bg-[#f0f2f5] hover:!text-[#1877f2] ${
+                      active ? "!bg-[#e7f3ff] !text-[#1877f2] after:absolute after:bottom-[-7px] after:h-1 after:w-10 after:rounded-full after:bg-[#1877f2] after:content-['']" : "!text-[#65676b]"
+                    }`}
+                  >
+                    {item.icon}
+                  </IconButton>
+                </Tooltip>
+              );
+            })}
           </Box>
         ) : null}
 

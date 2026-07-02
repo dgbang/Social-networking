@@ -4,6 +4,7 @@ const toPublicUser = require("../utils/publicUser");
 
 const MESSAGE_LIMIT_MAX = 50;
 const CONVERSATION_LIMIT_MAX = 50;
+const MESSAGE_CONTENT_MAX = 5000;
 
 function createError(status, code, message) {
   const error = new Error(message);
@@ -20,6 +21,14 @@ function normalizeLimit(limit, fallback, max) {
 function normalizeContent(content) {
   if (content === undefined || content === null) return "";
   return String(content).trim();
+}
+
+function markCreateResult(conversation, created) {
+  Object.defineProperty(conversation, "__created", {
+    value: created,
+    enumerable: false
+  });
+  return conversation;
 }
 
 function userInclude() {
@@ -230,7 +239,7 @@ async function createConversation(userId, payload) {
     await ensureFriends(userId, memberIds);
     const existing = await findPrivateConversation(userId, memberIds[0]);
     if (existing) {
-      return serializeConversation(existing, userId);
+      return markCreateResult(await serializeConversation(existing, userId), false);
     }
   }
 
@@ -265,7 +274,7 @@ async function createConversation(userId, payload) {
   });
 
   const withMembers = await Conversation.findByPk(conversation.id, { include: [memberInclude()] });
-  return serializeConversation(withMembers, userId);
+  return markCreateResult(await serializeConversation(withMembers, userId), true);
 }
 
 async function listMessages(userId, conversationId, { cursor, limit } = {}) {
@@ -304,6 +313,9 @@ async function createMessage(userId, payload) {
   }
   if (!content) {
     throw createError(400, "MESSAGE_CONTENT_REQUIRED", "Message content is required");
+  }
+  if (content.length > MESSAGE_CONTENT_MAX) {
+    throw createError(400, "MESSAGE_CONTENT_TOO_LONG", "Message content is too long");
   }
 
   await ensureMember(conversationId, userId);

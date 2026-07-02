@@ -30,7 +30,7 @@ router.post(
   "/:id/messages",
   [
     conversationIdParam,
-    body("content").isString().trim().notEmpty().withMessage("Message content is required"),
+    body("content").isString().trim().isLength({ min: 1, max: 5000 }).withMessage("Message content must be 1-5000 characters"),
     body("replyToId").optional({ nullable: true }).isUUID().withMessage("Valid reply message id is required")
   ],
   validate,

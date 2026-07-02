@@ -3,10 +3,12 @@ import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import ReplyRoundedIcon from "@mui/icons-material/ReplyRounded";
 import { Avatar, Box, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 
-function MessageBubble({ message, currentUser, onReply, onDelete }) {
+function MessageBubble({ message, currentUser, conversationType = "private", onReply, onDelete }) {
   const senderId = message.senderId || message.sender?.id;
   const own = String(senderId || "") === String(currentUser?.id || "");
   const senderName = message.sender?.fullName || message.sender?.username || "User";
+  const showSenderName = !own && conversationType === "group";
+  const actionButtonClass = "!h-7 !w-7 !rounded-full !text-[#4b5563] hover:!bg-[#DDDDDD]";
   const bubbleTone = message.isDeleted
     ? "bg-slate-200 text-slate-500 italic"
     : own
@@ -38,17 +40,42 @@ function MessageBubble({ message, currentUser, onReply, onDelete }) {
         </Avatar>
       ) : null}
       <Box
-        className={`flex flex-col ${own ? "items-end" : "items-start"}`}
+        className={`group flex flex-col ${own ? "items-end" : "items-start"}`}
         sx={{
           marginLeft: own ? "auto" : 0,
           marginRight: own ? 0 : "auto",
           maxWidth: { xs: "84%", sm: "min(72%, 560px)" }
         }}
       >
-        {!own ? (
+        {showSenderName ? (
           <Typography variant="caption" className="mb-0.5 ml-1 !font-semibold !text-slate-500">
             {senderName}
           </Typography>
+        ) : null}
+        {!message.isDeleted ? (
+          <Stack
+            direction="row"
+            spacing={0.25}
+            className={`mb-1 h-7 w-full ${actionsPosition} opacity-0 transition-opacity duration-150 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:pointer-events-auto`}
+          >
+            <Tooltip title="Reply">
+              <IconButton size="small" className={actionButtonClass} onClick={() => onReply(message)}>
+                <ReplyRoundedIcon fontSize="inherit" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Copy">
+              <IconButton size="small" className={actionButtonClass} onClick={copyMessage}>
+                <ContentCopyRoundedIcon fontSize="inherit" />
+              </IconButton>
+            </Tooltip>
+            {own ? (
+              <Tooltip title="Delete">
+                <IconButton size="small" className={actionButtonClass} onClick={() => onDelete(message.id)}>
+                  <DeleteOutlineRoundedIcon fontSize="inherit" />
+                </IconButton>
+              </Tooltip>
+            ) : null}
+          </Stack>
         ) : null}
         <Box className={`relative px-3.5 py-2.5 [overflow-wrap:anywhere] ${bubbleShape} ${bubbleTone}`}>
           {message.replyTo ? (
@@ -59,27 +86,6 @@ function MessageBubble({ message, currentUser, onReply, onDelete }) {
           ) : null}
           <Typography className="!leading-relaxed">{message.isDeleted ? "Tin nhan da duoc thu hoi" : message.content}</Typography>
         </Box>
-        {!message.isDeleted ? (
-          <Stack direction="row" spacing={0.25} className={`mt-1 w-full ${actionsPosition} opacity-75 [&_.MuiIconButton-root]:!h-6 [&_.MuiIconButton-root]:!w-6`}>
-            <Tooltip title="Reply">
-              <IconButton size="small" onClick={() => onReply(message)}>
-                <ReplyRoundedIcon fontSize="inherit" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Copy">
-              <IconButton size="small" onClick={copyMessage}>
-                <ContentCopyRoundedIcon fontSize="inherit" />
-              </IconButton>
-            </Tooltip>
-            {own ? (
-              <Tooltip title="Delete">
-                <IconButton size="small" onClick={() => onDelete(message.id)}>
-                  <DeleteOutlineRoundedIcon fontSize="inherit" />
-                </IconButton>
-              </Tooltip>
-            ) : null}
-          </Stack>
-        ) : null}
       </Box>
     </Box>
   );

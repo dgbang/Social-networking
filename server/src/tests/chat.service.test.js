@@ -114,6 +114,8 @@ describe("chatService conversations", () => {
     expect(Conversation.create).not.toHaveBeenCalled();
     expect(conversation.id).toBe("conv-1");
     expect(conversation.type).toBe("private");
+    expect(conversation.__created).toBe(false);
+    expect(JSON.stringify(conversation)).not.toContain("__created");
   });
 
   it("creates a group conversation with creator as admin", async () => {
@@ -188,6 +190,18 @@ describe("chatService messages", () => {
     );
     expect(Conversation.update).toHaveBeenCalled();
     expect(message.id).toBe("msg-new");
+  });
+
+  it("rejects text messages over 5000 characters", async () => {
+    await expect(
+      chatService.createMessage("user-a", {
+        conversationId: "conv-1",
+        content: "x".repeat(5001)
+      })
+    ).rejects.toMatchObject({
+      status: 400,
+      code: "MESSAGE_CONTENT_TOO_LONG"
+    });
   });
 
   it("only lets the sender delete a message", async () => {

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { createConversation } from "../api/chatApi.js";
+import { getFriends } from "../api/friendApi.js";
 import { getMyProfile, getUserProfile, updateMyProfile, uploadAvatar, uploadCover } from "../api/userApi.js";
 import { ProfilePageSkeleton } from "../components/Common/Skeletons.jsx";
 import EditProfileModal from "../components/profile/EditProfileModal.jsx";
@@ -11,6 +13,7 @@ import { cropImageFile } from "../utils/imageCrop.js";
 
 function ProfilePage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
   const [profile, setProfile] = useState(null);
@@ -18,6 +21,8 @@ function ProfilePage() {
   const [error, setError] = useState("");
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [friendIds, setFriendIds] = useState([]);
+  const [messageBusy, setMessageBusy] = useState(false);
 
   const isOwner = !id || id === auth.user?.id;
 
@@ -40,6 +45,24 @@ function ProfilePage() {
       active = false;
     };
   }, [id, isOwner]);
+
+  useEffect(() => {
+    if (isOwner) {
+      setFriendIds([]);
+      return;
+    }
+    let active = true;
+    getFriends()
+      .then((friends) => {
+        if (active) setFriendIds(friends.map((friend) => friend.id));
+      })
+      .catch(() => {
+        if (active) setFriendIds([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, [isOwner, id]);
 
   function syncAuthUser(user) {
     if (isOwner && auth.accessToken) {
@@ -94,13 +117,34 @@ function ProfilePage() {
     }
   }
 
+  async function handleMessage() {
+    if (!profile?.id) return;
+    setMessageBusy(true);
+    setError("");
+    try {
+      const conversation = await createConversation({ type: "private", memberIds: [profile.id] });
+      navigate(`/messenger?conversationId=${conversation.id}`);
+    } catch (err) {
+      setError(err.response?.data?.message || "Khong mo duoc doan chat.");
+    } finally {
+      setMessageBusy(false);
+    }
+  }
+
   if (loading) return <ProfilePageSkeleton />;
   if (error && !profile) return <section className="rounded-lg border border-[#c8d7e6] bg-white/95 p-4 text-[#9f1b2a] shadow-[0_14px_34px_rgba(43,101,151,0.12)]">{error}</section>;
 
   return (
     <div className="grid gap-4 pt-4">
       {error ? <p className="my-3.5 rounded-md bg-[#ffe9eb] p-3 text-sm text-[#9f1b2a]">{error}</p> : null}
-      <ProfileHeader user={profile} isOwner={isOwner} onEdit={() => setEditing(true)} />
+      <ProfileHeader
+        user={profile}
+        isOwner={isOwner}
+        canMessage={!isOwner && friendIds.includes(profile?.id)}
+        messageBusy={messageBusy}
+        onEdit={() => setEditing(true)}
+        onMessage={handleMessage}
+      />
       {editing ? (
         <EditProfileModal
           user={profile}

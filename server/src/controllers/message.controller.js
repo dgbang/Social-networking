@@ -5,7 +5,9 @@ async function remove(req, res) {
   const message = await chatService.deleteMessage(req.user.id, req.params.id);
   const io = req.app.get("io");
   if (io) {
-    io.to(`conversation:${message.conversationId}`).emit("message_deleted", {
+    const memberIds = await chatService.getConversationMemberIds(message.conversationId);
+    const rooms = [`conversation:${message.conversationId}`, ...memberIds.map((memberId) => `user:${memberId}`)];
+    io.to(rooms).emit("message_deleted", {
       conversationId: message.conversationId,
       messageId: message.id,
       message

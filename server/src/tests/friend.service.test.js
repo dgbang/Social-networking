@@ -7,8 +7,12 @@ jest.mock("../models", () => ({
     findByPk: jest.fn()
   }
 }));
+jest.mock("../services/chat.service", () => ({
+  createConversation: jest.fn()
+}));
 
 const { Friendship, User } = require("../models");
+const chatService = require("../services/chat.service");
 const friendService = require("../services/friend.service");
 
 describe("friendService.sendRequest", () => {
@@ -47,5 +51,29 @@ describe("friendService.sendRequest", () => {
       status: "pending"
     });
     expect(Friendship.create).not.toHaveBeenCalled();
+  });
+});
+
+describe("friendService.acceptRequest", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("accepts the request and creates or reuses a private conversation", async () => {
+    const friendship = {
+      update: jest.fn().mockResolvedValue(undefined)
+    };
+    const conversation = { id: "conversation-ab", type: "private" };
+    Friendship.findOne.mockResolvedValue(friendship);
+    chatService.createConversation.mockResolvedValue(conversation);
+
+    const result = await friendService.acceptRequest("user-b", "user-a");
+
+    expect(friendship.update).toHaveBeenCalledWith({ status: "accepted" });
+    expect(chatService.createConversation).toHaveBeenCalledWith("user-b", {
+      type: "private",
+      memberIds: ["user-a"]
+    });
+    expect(result).toEqual({ friendship, conversation });
   });
 });

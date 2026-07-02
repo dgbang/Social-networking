@@ -1,5 +1,6 @@
 const { Op } = require("sequelize");
 const { Friendship, User } = require("../models");
+const chatService = require("./chat.service");
 const toPublicUser = require("../utils/publicUser");
 
 function createError(status, code, message) {
@@ -76,7 +77,11 @@ async function acceptRequest(currentUserId, requesterId) {
   }
 
   await friendship.update({ status: "accepted" });
-  return friendship;
+  const conversation = await chatService.createConversation(currentUserId, {
+    type: "private",
+    memberIds: [requesterId]
+  });
+  return { friendship, conversation };
 }
 
 async function rejectRequest(currentUserId, requesterId) {

@@ -146,6 +146,7 @@ Ket qua chinh:
 - User nhan loi moi co the chap nhan.
 - User nhan loi moi co the tu choi.
 - User da la ban co the unfriend.
+- Khi chap nhan ket ban, he thong tao hoac reuse private conversation cho hai user.
 - User lay duoc danh sach ban be.
 - User lay duoc danh sach loi moi dang cho.
 - User lay duoc danh sach goi y ket ban don gian.
@@ -162,6 +163,7 @@ Ket qua chinh:
 - Upload avatar/cover co crop truoc khi save.
 - Friends page co tab friends, requests, suggestions.
 - UserCard hien thong tin user co ban va action phu hop.
+- Profile cua user khac da la ban co nut nhan tin di toi conversation private.
 - Navbar co search user.
 - UI co loading, empty state va error state co ban.
 

@@ -6,6 +6,7 @@ const { verifyAccessToken } = require("../utils/tokens");
 const toPublicUser = require("../utils/publicUser");
 const chatService = require("../services/chat.service");
 const onlineUsers = require("./onlineUsers");
+const { registerCallHandlers, handleCallDisconnect } = require("./callHandlers");
 
 function socketError(socket, error) {
   socket.emit("socket_error", {
@@ -33,9 +34,17 @@ async function emitToFriends(io, userId, eventName) {
 
 async function emitConversationMessage(io, conversationId, eventName, message) {
   const memberIds = await chatService.getConversationMemberIds(conversationId);
-  io.to(`conversation:${conversationId}`).emit(eventName, { conversationId, message });
-  memberIds.forEach((memberId) => {
-    io.to(`user:${memberId}`).emit(eventName, { conversationId, message });
+  const rooms = [`conversation:${conversationId}`, ...memberIds.map((memberId) => `user:${memberId}`)];
+  io.to(rooms).emit(eventName, { conversationId, message });
+}
+
+async function emitConversationDelete(io, message) {
+  const memberIds = await chatService.getConversationMemberIds(message.conversationId);
+  const rooms = [`conversation:${message.conversationId}`, ...memberIds.map((memberId) => `user:${memberId}`)];
+  io.to(rooms).emit("message_deleted", {
+    conversationId: message.conversationId,
+    messageId: message.id,
+    message
   });
 }
 
@@ -78,7 +87,10 @@ function setupSocket(server) {
       emitToFriends(io, user.id, "user_online").catch(() => {});
     }
 
-    socket.emit("online_users_list", { userIds: onlineUsers.listOnlineUserIds() });
+    const friendIds = await getFriendIds(user.id);
+    socket.emit("online_users_list", {
+      userIds: friendIds.filter((friendId) => onlineUsers.isOnline(friendId))
+    });
 
     socket.on("join_conversation", async (payload = {}) => {
       try {
@@ -89,34 +101,36 @@ function setupSocket(server) {
       }
     });
 
-    socket.on("send_message", async (payload = {}) => {
+    socket.on("send_message", async (payload = {}, ack) => {
       try {
         const message = await chatService.createMessage(user.id, payload);
         await emitConversationMessage(io, message.conversationId, "new_message", message);
+        if (typeof ack === "function") ack({ ok: true, message });
       } catch (error) {
         socketError(socket, error);
+        if (typeof ack === "function") ack({ ok: false, error: { code: error.code, message: error.message } });
       }
     });
 
-    socket.on("reply_message", async (payload = {}) => {
+    socket.on("reply_message", async (payload = {}, ack) => {
       try {
         const message = await chatService.createMessage(user.id, payload);
         await emitConversationMessage(io, message.conversationId, "new_reply", message);
+        if (typeof ack === "function") ack({ ok: true, message });
       } catch (error) {
         socketError(socket, error);
+        if (typeof ack === "function") ack({ ok: false, error: { code: error.code, message: error.message } });
       }
     });
 
-    socket.on("delete_message", async (payload = {}) => {
+    socket.on("delete_message", async (payload = {}, ack) => {
       try {
         const message = await chatService.deleteMessage(user.id, payload.messageId);
-        io.to(`conversation:${message.conversationId}`).emit("message_deleted", {
-          conversationId: message.conversationId,
-          messageId: message.id,
-          message
-        });
+        await emitConversationDelete(io, message);
+        if (typeof ack === "function") ack({ ok: true, message });
       } catch (error) {
         socketError(socket, error);
+        if (typeof ack === "function") ack({ ok: false, error: { code: error.code, message: error.message } });
       }
     });
 
@@ -153,10 +167,13 @@ function setupSocket(server) {
       }
     });
 
+    registerCallHandlers(io, socket);
+
     socket.on("disconnect", () => {
       const becameOffline = onlineUsers.removeUserSocket(user.id, socket.id);
       if (becameOffline) {
         emitToFriends(io, user.id, "user_offline").catch(() => {});
+        handleCallDisconnect(io, user.id).catch(() => {});
       }
     });
   });

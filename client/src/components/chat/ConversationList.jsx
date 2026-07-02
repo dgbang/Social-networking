@@ -1,5 +1,4 @@
-import AddCommentRoundedIcon from "@mui/icons-material/AddCommentRounded";
-import { Avatar, Badge, Box, Button, List, ListItemButton, ListItemText, Paper, Stack, Typography } from "@mui/material";
+import { Avatar, Badge, Box, List, ListItemButton, ListItemText, Paper, Stack, Typography } from "@mui/material";
 import { ConversationListSkeleton } from "../Common/Skeletons.jsx";
 
 function preview(conversation) {
@@ -8,7 +7,7 @@ function preview(conversation) {
   return conversation.lastMessage.content || "Media";
 }
 
-function ConversationList({ conversations, selectedId, loading, onlineIds = [], currentUser, onSelect, onCreate }) {
+function ConversationList({ conversations, selectedId, loading, onlineIds = [], currentUser, onSelect }) {
   return (
     <Paper className="conversation-list flex h-full min-h-0 flex-col overflow-hidden !rounded-lg !border !border-slate-200 !bg-white !shadow-sm" elevation={0}>
       <Stack direction="row" alignItems="center" justifyContent="space-between" className="border-b border-slate-200 p-3.5 max-[560px]:p-2.5">
@@ -16,9 +15,6 @@ function ConversationList({ conversations, selectedId, loading, onlineIds = [], 
           <Typography variant="h5">Chats</Typography>
           <Typography variant="body2" color="text.secondary">Tin nhan realtime</Typography>
         </Box>
-        <Button size="small" variant="contained" startIcon={<AddCommentRoundedIcon />} onClick={onCreate}>
-          New
-        </Button>
       </Stack>
 
       {loading ? <ConversationListSkeleton /> : null}
@@ -26,7 +22,7 @@ function ConversationList({ conversations, selectedId, loading, onlineIds = [], 
       {!loading && conversations.length === 0 ? (
         <Box className="grid min-h-[220px] content-center justify-items-center gap-1.5 p-4 text-center">
           <Typography variant="subtitle2">Chua co conversation.</Typography>
-          <Typography variant="body2" color="text.secondary">Tao chat moi voi ban be de bat dau.</Typography>
+          <Typography variant="body2" color="text.secondary">Ket ban hoac vao profile ban be de bat dau nhan tin.</Typography>
         </Box>
       ) : null}
 

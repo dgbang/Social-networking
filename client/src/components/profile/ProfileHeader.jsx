@@ -2,7 +2,7 @@ function initial(user) {
   return user?.fullName?.charAt(0)?.toUpperCase() || user?.username?.charAt(0)?.toUpperCase() || "U";
 }
 
-function ProfileHeader({ user, isOwner, onEdit }) {
+function ProfileHeader({ user, isOwner, canMessage = false, messageBusy = false, onEdit, onMessage }) {
   return (
     <section className="overflow-hidden rounded-lg border border-[#c8d7e6] bg-white/95 shadow-[0_14px_34px_rgba(43,101,151,0.12)]">
       <div className="h-[clamp(190px,28vw,320px)] overflow-hidden rounded-t-lg bg-[linear-gradient(135deg,rgba(27,113,195,0.08),rgba(237,113,84,0.18)),#dff2fb]">
@@ -22,6 +22,11 @@ function ProfileHeader({ user, isOwner, onEdit }) {
         {isOwner ? (
           <button className="rounded-md bg-[#176fd1] px-4 py-2 font-bold text-white" type="button" onClick={onEdit}>
             Edit
+          </button>
+        ) : null}
+        {!isOwner && canMessage ? (
+          <button className="rounded-md bg-[#176fd1] px-4 py-2 font-bold text-white disabled:opacity-60" type="button" onClick={onMessage} disabled={messageBusy}>
+            {messageBusy ? "Dang mo..." : "Nhan tin"}
           </button>
         ) : null}
       </div>

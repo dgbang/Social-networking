@@ -60,6 +60,15 @@ Email uses Resend for forgot/reset password when `RESEND_API_KEY` is configured.
 - Friends APIs under `/api/friends`: request, accept, reject, unfriend, friends list, pending requests, suggestions.
 - React profile and friends pages at `/profile`, `/users/:id`, and `/friends`, plus navbar user search.
 
+## Phase 5-6 realtime scope
+
+- Phase 5 adds realtime chat with conversations, group/private chat, message history, send/reply/delete, read state, typing, online friends, and `/messenger`.
+- Phase 6 adds 1-1 video call signaling over Socket.IO, incoming/outgoing call UI, native WebRTC peer connection, mute/camera controls, end/reject/timeout handling, and call log messages.
+
+### WebRTC limitation
+
+Video call currently uses browser WebRTC with a public STUN server and no dedicated TURN server. Calls should work for local/demo-friendly networks, but some NAT/firewall combinations may fail until a TURN server is configured.
+
 ## Google login setup
 
 Google login is optional. To enable it locally:

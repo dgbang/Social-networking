@@ -12,6 +12,7 @@ Phase 5 xay dung realtime chat trong tuan 7-8:
 - User co typing, read state va online/offline co ban.
 - Frontend co trang `/messenger` voi conversation list va chat window.
 - UI can dep, hien dai, gan voi trai nghiem Messenger/Facebook/Instagram DM theo yeu cau UI truoc do.
+- UX cap nhat: khong hien nut tao chat moi trong Messenger; private conversation duoc tao/reuse khi ket ban hoac khi bam nhan tin tu profile ban be.
 
 ## Nguon tai lieu
 
@@ -126,7 +127,7 @@ Phase 5 xay dung realtime chat trong tuan 7-8:
 
 - Navbar co link toi `/messenger`.
 - Messenger page hien conversation list va chat window.
-- User tao private chat/group chat duoc tu UI.
+- Messenger khong hien nut tao chat moi; user vao profile ban be de bam nhan tin, hoac conversation da co sau khi accept friend.
 - User gui/nhan message realtime.
 - User reply, delete/recall va copy message duoc tu UI.
 - UI co loading, empty state, error state.

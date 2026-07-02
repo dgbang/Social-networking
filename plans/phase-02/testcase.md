@@ -13,7 +13,7 @@ Phase 2 test cac nhom chuc nang:
 
 - User profile backend: lay profile, cap nhat profile, xem profile user khac, search user.
 - Upload avatar/cover: crop tren UI, validate file image, validate size 5MB, upload thanh cong.
-- Friends backend: request, accept, reject, unfriend, friends list, requests, suggestions.
+- Friends backend: request, accept, reject, unfriend, friends list, requests, suggestions, auto-create private chat khi accept.
 - Frontend profile: hien thi profile, edit profile, crop/upload avatar cover, owner vs non-owner.
 - Frontend friends: tabs, UserCard, add/accept/reject/unfriend, search tren navbar.
 - Security/permission: auth required, khong expose sensitive fields, chi owner thay email.
@@ -81,6 +81,7 @@ Quy uoc:
 | P02-MANUAL-015 | Friends | Suggestions loai user da co quan he | Dang nhap `userA` -> vao tab suggestions | Khong hien `userA`, `userC`, `userD` pending, `userE` pending; co the hien `userB` | Medium |
 | P02-MANUAL-016 | UI State | Empty states | Dung account khong co friends/requests/suggestions -> mo Friends page | UI hien empty state ro rang, khong bi trang trong kho hieu | Medium |
 | P02-MANUAL-017 | UI State | Loading/error states | Mo profile/friends khi API cham hoac bi loi | UI co loading/error state, khong crash | Medium |
+| P02-MANUAL-018 | Chat handoff | Nhan tin tu profile ban be | Dang nhap `userA` -> vao profile accepted friend `userC` -> bam Nhan tin | Mo `/messenger?conversationId=...` va select private conversation voi `userC` | High |
 
 ## API Testcases
 
@@ -117,7 +118,7 @@ Quy uoc:
 | P02-FRIEND-004 | `/api/friends/request/:userId` | POST | Duplicate request nguoc chieu | Da co `userB -> userA` pending, `userA` gui lai cho `userB` | 409 hoac xu ly theo design; khong tao duplicate cap nguoc |
 | P02-FRIEND-005 | `/api/friends/request/:userId` | POST | Gui request toi user da la friend | `:userId=userC.id` | 409; error `ALREADY_FRIENDS` hoac tuong duong |
 | P02-FRIEND-006 | `/api/friends/request/:userId` | POST | User target khong ton tai | UUID hop le khong ton tai | 404 |
-| P02-FRIEND-007 | `/api/friends/accept/:userId` | PUT | Accept request thanh cong | `:userId=userD.id`, token `userA` | 200; friendship status `accepted` |
+| P02-FRIEND-007 | `/api/friends/accept/:userId` | PUT | Accept request thanh cong | `:userId=userD.id`, token `userA` | 200; friendship status `accepted`; response co private conversation giua hai user |
 | P02-FRIEND-008 | `/api/friends/accept/:userId` | PUT | User khong phai addressee accept | `userB` accept request khong gui toi minh | 403/404; khong doi status |
 | P02-FRIEND-009 | `/api/friends/accept/:userId` | PUT | Accept request khong ton tai | `:userId=userB.id` khi khong co pending request | 404 |
 | P02-FRIEND-010 | `/api/friends/reject/:userId` | PUT | Reject request thanh cong | `:userId=userD.id`, token `userA` | 200; request khong con pending; record friendship duoc giu voi status `rejected` |
@@ -152,7 +153,8 @@ Quy uoc:
 | P02-UI-015 | Friends | Accept action | Bam Accept request tu `userD` | User chuyen sang friends list, request bien mat |
 | P02-UI-016 | Friends | Reject action | Bam Reject request tu `userD` | Request bien mat, user khong vao friends list |
 | P02-UI-017 | Friends | Unfriend action | Bam Unfriend `userC` va confirm neu co | User bien mat khoi friends list |
-| P02-UI-018 | Responsive | Mobile profile/friends | Mo profile/friends o mobile viewport | Khong overlap text/UI; crop modal va action buttons dung duoc |
+| P02-UI-018 | Profile | Message accepted friend | Mo profile accepted friend -> bam Nhan tin | Dieu huong toi Messenger va chon dung private conversation |
+| P02-UI-019 | Responsive | Mobile profile/friends | Mo profile/friends o mobile viewport | Khong overlap text/UI; crop modal va action buttons dung duoc |
 
 ## Edge Cases
 

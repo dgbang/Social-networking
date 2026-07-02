@@ -56,7 +56,7 @@ Huong thiet ke:
 - `client/src/pages/ProfilePage.jsx`: trang profile.
 - `client/src/pages/FriendsPage.jsx`: trang friends.
 - `client/src/components/profile/EditProfileModal.jsx`: modal sua profile.
-- `client/src/components/profile/ProfileHeader.jsx`: cover/avatar/name/bio/action.
+- `client/src/components/profile/ProfileHeader.jsx`: cover/avatar/name/bio/action va nut nhan tin cho profile ban be.
 - `client/src/components/friends/UserCard.jsx`: card user dung chung.
 - `client/src/store/userSlice.js`: state profile/search neu can.
 - `client/src/store/friendSlice.js`: state friends/requests/suggestions neu can.
@@ -292,6 +292,8 @@ Xu ly:
 - `userId` la requester.
 - Chi addressee cua request moi duoc accept.
 - Cap nhat status thanh `accepted`.
+- Tao hoac reuse private conversation giua current user va requester de chat co san sau khi ket ban.
+- Response tra `friendship` va `conversation`.
 
 ### PUT `/api/friends/reject/:userId`
 
@@ -369,6 +371,7 @@ Flow viewer:
 2. Frontend goi `GET /api/users/:id`.
 3. Hien thong tin public co ban, khong hien email.
 4. Hien action theo trang thai friendship: Add Friend, Pending, Accept/Reject, Unfriend.
+5. Neu user khac da la accepted friend, hien nut `Nhan tin`; khi bam thi tao/reuse private conversation va dieu huong toi `/messenger?conversationId=...`.
 
 ### Friends page
 
@@ -464,14 +467,16 @@ Neu muon lam nhanh trong Phase 2, co the tao trang/search result don gian thay v
 7. Implement upload avatar/cover voi URL + publicId, xoa anh cu sau khi DB update thanh cong.
 8. Tao migration/model `Friendship` va associations voi `User`.
 9. Implement friend service: request, accept, reject giu status `rejected`, unfriend xoa record.
-10. Implement friends list, requests va suggestions.
-11. Viet backend tests cho profile/friends core.
-12. Tao frontend API clients `userApi`, `friendApi`.
-13. Tao Profile page, ProfileHeader, EditProfileModal.
-14. Tao Friends page, tabs va UserCard.
-15. Gan navbar search user.
-16. Test end-to-end voi it nhat 2-3 users.
-17. Cap nhat README/env neu them Cloudinary variables.
+10. Khi accept request, goi chat service de tao/reuse private conversation.
+11. Implement friends list, requests va suggestions.
+12. Viet backend tests cho profile/friends core.
+13. Tao frontend API clients `userApi`, `friendApi`.
+14. Tao Profile page, ProfileHeader, EditProfileModal.
+15. Tao Friends page, tabs va UserCard.
+16. Gan navbar search user.
+17. Gan nut nhan tin tren profile accepted friend.
+18. Test end-to-end voi it nhat 2-3 users.
+19. Cap nhat README/env neu them Cloudinary variables.
 
 ## Anh huong testcase
 
@@ -495,6 +500,7 @@ Testcase Phase 2 nen bao gom:
 - Gui friend request cho chinh minh fail.
 - Gui duplicate request fail.
 - Accept request success.
+- Accept request tao/reuse private conversation.
 - Accept request boi user khong phai addressee fail.
 - Reject request success va status duoc set `rejected`.
 - Unfriend success va record friendship `accepted` bi xoa.
@@ -502,6 +508,7 @@ Testcase Phase 2 nen bao gom:
 - Requests list dung.
 - Suggestions loai current user va user da co friendship.
 - UI profile edit/upload.
+- UI profile ban be co nut nhan tin va dieu huong dung conversation.
 - UI friends add/accept/reject/unfriend.
 
 ## Cau hoi can xac nhan

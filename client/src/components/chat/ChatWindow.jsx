@@ -4,6 +4,7 @@ import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import VideocamRoundedIcon from "@mui/icons-material/VideocamRounded";
 import { Avatar, Box, Button, IconButton, Paper, Stack, TextField, Tooltip, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { ChatMessagesSkeleton } from "../Common/Skeletons.jsx";
 import MessageBubble from "./MessageBubble.jsx";
 
@@ -66,7 +67,15 @@ function ChatWindow({
         <IconButton className="md:!hidden" onClick={onBack}>
           <ArrowBackRoundedIcon />
         </IconButton>
-        <Avatar src={conversation.avatar || undefined}>{conversation.name?.charAt(0).toUpperCase() || "C"}</Avatar>
+        {otherMember ? (
+          <Tooltip title="Xem trang ca nhan">
+            <Box component={Link} to={`/users/${otherMember.userId}`} className="rounded-full transition-opacity hover:opacity-80">
+              <Avatar src={conversation.avatar || otherMember.user?.avatar || undefined}>{conversation.name?.charAt(0).toUpperCase() || "C"}</Avatar>
+            </Box>
+          </Tooltip>
+        ) : (
+          <Avatar src={conversation.avatar || undefined}>{conversation.name?.charAt(0).toUpperCase() || "C"}</Avatar>
+        )}
         <Box className="min-w-0 flex-1">
           <Typography variant="subtitle1" noWrap className="font-bold">{conversation.name}</Typography>
           <Typography variant="caption" color="text.secondary">

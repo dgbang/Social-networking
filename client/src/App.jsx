@@ -12,6 +12,7 @@ import ProfilePage from "./pages/ProfilePage.jsx";
 import FriendsPage from "./pages/FriendsPage.jsx";
 import PostDetailPage from "./pages/PostDetailPage.jsx";
 import MessengerPage from "./pages/MessengerPage.jsx";
+import NotificationsPage from "./pages/NotificationsPage.jsx";
 import ProtectedRoute from "./routes/ProtectedRoute.jsx";
 
 function App() {
@@ -75,6 +76,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <MessengerPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute>
+                <NotificationsPage />
               </ProtectedRoute>
             }
           />

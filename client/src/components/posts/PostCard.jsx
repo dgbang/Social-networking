@@ -69,9 +69,13 @@ function PostCard({ post, currentUser, onChanged, onDeleted, onShare, onOpenDeta
   const isOwner = post.userId === currentUser?.id;
   const activeReaction = post.currentReaction?.type ? reactionMap[post.currentReaction.type] : null;
 
-  async function handleReact(type) {
+  async function handleReact(type, { allowToggle = true } = {}) {
     const previous = post;
-    const nextReaction = previous.currentReaction?.type === type ? null : { type };
+    if (!allowToggle && previous.currentReaction?.type === type) {
+      return;
+    }
+
+    const nextReaction = previous.currentReaction?.type === type && allowToggle ? null : { type };
     const delta = previous.currentReaction ? (nextReaction ? 0 : -1) : 1;
     onChanged?.({ ...post, currentReaction: nextReaction, likesCount: Math.max((post.likesCount || 0) + delta, 0) });
 
@@ -233,6 +237,10 @@ function PostCard({ post, currentUser, onChanged, onDeleted, onShare, onOpenDeta
             {activeReaction?.label || "Thich"}
           </Button>
           <Box
+            aria-hidden="true"
+            className="pointer-events-none absolute bottom-full left-0 h-3 w-full opacity-0 group-hover/reaction:pointer-events-auto group-focus-within/reaction:pointer-events-auto"
+          />
+          <Box
             className="pointer-events-none absolute bottom-[calc(100%+6px)] left-0 z-10 flex w-max max-w-[min(330px,82vw)] translate-y-2 scale-95 gap-1 rounded-full border border-[#ced0d4]/80 bg-white px-2 py-1.5 opacity-0 shadow-[0_8px_24px_rgba(20,32,45,0.18)] transition group-hover/reaction:pointer-events-auto group-hover/reaction:translate-y-0 group-hover/reaction:scale-100 group-hover/reaction:opacity-100 group-focus-within/reaction:pointer-events-auto group-focus-within/reaction:translate-y-0 group-focus-within/reaction:scale-100 group-focus-within/reaction:opacity-100"
             role="menu"
             aria-label="Chon cam xuc"
@@ -243,7 +251,7 @@ function PostCard({ post, currentUser, onChanged, onDeleted, onShare, onOpenDeta
                   post.currentReaction?.type === reaction.type ? "!bg-[#edf5ff]" : ""
                 }`}
                 key={reaction.type}
-                onClick={() => handleReact(reaction.type)}
+                onClick={() => handleReact(reaction.type, { allowToggle: false })}
                 title={reaction.label}
                 aria-label={reaction.label}
               >

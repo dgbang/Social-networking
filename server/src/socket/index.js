@@ -3,8 +3,8 @@ const { Op } = require("sequelize");
 const env = require("../config/env");
 const { User, Friendship } = require("../models");
 const { verifyAccessToken } = require("../utils/tokens");
-const toPublicUser = require("../utils/publicUser");
 const chatService = require("../services/chat.service");
+const notificationService = require("../services/notification.service");
 const onlineUsers = require("./onlineUsers");
 const { registerCallHandlers, handleCallDisconnect } = require("./callHandlers");
 
@@ -36,6 +36,7 @@ async function emitConversationMessage(io, conversationId, eventName, message) {
   const memberIds = await chatService.getConversationMemberIds(conversationId);
   const rooms = [`conversation:${conversationId}`, ...memberIds.map((memberId) => `user:${memberId}`)];
   io.to(rooms).emit(eventName, { conversationId, message });
+  return memberIds;
 }
 
 async function emitConversationDelete(io, message) {
@@ -55,6 +56,7 @@ function setupSocket(server) {
       credentials: true
     }
   });
+  notificationService.setSocketServer(io);
 
   io.use(async (socket, next) => {
     try {
@@ -104,7 +106,14 @@ function setupSocket(server) {
     socket.on("send_message", async (payload = {}, ack) => {
       try {
         const message = await chatService.createMessage(user.id, payload);
-        await emitConversationMessage(io, message.conversationId, "new_message", message);
+        const memberIds = await emitConversationMessage(io, message.conversationId, "new_message", message);
+        notificationService
+          .createOfflineMessageNotifications({
+            message,
+            memberIds,
+            isOnline: (memberId) => onlineUsers.isOnline(memberId)
+          })
+          .catch(() => {});
         if (typeof ack === "function") ack({ ok: true, message });
       } catch (error) {
         socketError(socket, error);
@@ -115,7 +124,14 @@ function setupSocket(server) {
     socket.on("reply_message", async (payload = {}, ack) => {
       try {
         const message = await chatService.createMessage(user.id, payload);
-        await emitConversationMessage(io, message.conversationId, "new_reply", message);
+        const memberIds = await emitConversationMessage(io, message.conversationId, "new_reply", message);
+        notificationService
+          .createOfflineMessageNotifications({
+            message,
+            memberIds,
+            isOnline: (memberId) => onlineUsers.isOnline(memberId)
+          })
+          .catch(() => {});
         if (typeof ack === "function") ack({ ok: true, message });
       } catch (error) {
         socketError(socket, error);
@@ -131,30 +147,6 @@ function setupSocket(server) {
       } catch (error) {
         socketError(socket, error);
         if (typeof ack === "function") ack({ ok: false, error: { code: error.code, message: error.message } });
-      }
-    });
-
-    socket.on("typing", async (payload = {}) => {
-      try {
-        await chatService.ensureMember(payload.conversationId, user.id);
-        socket.to(`conversation:${payload.conversationId}`).emit("user_typing", {
-          conversationId: payload.conversationId,
-          user: toPublicUser(user, { includeEmail: false })
-        });
-      } catch (error) {
-        socketError(socket, error);
-      }
-    });
-
-    socket.on("stop_typing", async (payload = {}) => {
-      try {
-        await chatService.ensureMember(payload.conversationId, user.id);
-        socket.to(`conversation:${payload.conversationId}`).emit("user_stop_typing", {
-          conversationId: payload.conversationId,
-          user: toPublicUser(user, { includeEmail: false })
-        });
-      } catch (error) {
-        socketError(socket, error);
       }
     });
 

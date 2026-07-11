@@ -2,7 +2,18 @@ import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import VideocamRoundedIcon from "@mui/icons-material/VideocamRounded";
-import { Avatar, Box, Button, IconButton, Paper, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import {
+  Avatar,
+  Badge,
+  Box,
+  Button,
+  IconButton,
+  Paper,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChatMessagesSkeleton } from "../Common/Skeletons.jsx";
@@ -14,21 +25,18 @@ function ChatWindow({
   messages,
   hasMore,
   loading,
-  typingUsers = [],
   onBack,
   onLoadMore,
   onSend,
   onReply,
   onDelete,
-  onTyping,
-  onStopTyping,
   onStartCall,
+  onlineIds = [],
   replyTarget,
-  onCancelReply
+  onCancelReply,
 }) {
   const [content, setContent] = useState("");
   const bottomRef = useRef(null);
-  const typingTimeoutRef = useRef(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -36,20 +44,36 @@ function ChatWindow({
 
   if (!conversation) {
     return (
-      <Paper className="chat-window grid h-full min-h-0 content-center justify-items-center gap-1.5 rounded-lg border border-slate-200 p-4 text-center shadow-sm" elevation={0}>
-        <Typography variant="h6">Chon mot conversation de bat dau.</Typography>
-        <Typography color="text.secondary">Tin nhan cua ban se hien o day.</Typography>
+      <Paper
+        className="chat-window grid h-full min-h-0 content-center justify-items-center gap-1.5 rounded-lg border border-slate-200 p-4 text-center shadow-sm"
+        elevation={0}
+      >
+        <Typography variant="h6">Vui long chon box chat.</Typography>
+        <Typography color="text.secondary">
+          Tin nhan cua ban se hien o day.
+        </Typography>
       </Paper>
     );
   }
 
-  const otherMember = conversation.type === "private" ? conversation.members.find((member) => member.userId !== currentUser?.id) : null;
+  const otherMember =
+    conversation.type === "private"
+      ? conversation.members.find((member) => member.userId !== currentUser?.id)
+      : null;
+  const isOtherMemberOnline = Boolean(
+    otherMember && onlineIds.includes(otherMember.userId),
+  );
+  const onlineBadgeSx = {
+    "& .MuiBadge-dot": {
+      width: 16,
+      height: 16,
+      borderRadius: "50%",
+      border: "2px solid #fff",
+    },
+  };
 
   function handleChange(event) {
     setContent(event.target.value);
-    onTyping(conversation.id);
-    window.clearTimeout(typingTimeoutRef.current);
-    typingTimeoutRef.current = window.setTimeout(() => onStopTyping(conversation.id), 900);
   }
 
   function handleSubmit(event) {
@@ -58,28 +82,65 @@ function ChatWindow({
     if (!value) return;
     onSend(value, replyTarget);
     setContent("");
-    onStopTyping(conversation.id);
   }
 
   return (
-    <Paper className="chat-window flex h-full min-h-0 flex-col overflow-hidden !rounded-lg !border !border-slate-200 !bg-white !shadow-sm" elevation={0}>
-      <Stack direction="row" alignItems="center" spacing={1.25} className="border-b border-slate-200 p-3.5 max-[560px]:p-2.5">
+    <Paper
+      className="chat-window flex h-full min-h-0 flex-col overflow-hidden !rounded-lg !border !border-slate-200 !bg-white !shadow-sm"
+      elevation={0}
+    >
+      <Stack
+        direction="row"
+        alignItems="center"
+        spacing={1.25}
+        className="border-b border-slate-200 p-3.5 max-[560px]:p-2.5"
+      >
         <IconButton className="md:!hidden" onClick={onBack}>
           <ArrowBackRoundedIcon />
         </IconButton>
         {otherMember ? (
           <Tooltip title="Xem trang ca nhan">
-            <Box component={Link} to={`/users/${otherMember.userId}`} className="rounded-full transition-opacity hover:opacity-80">
-              <Avatar src={conversation.avatar || otherMember.user?.avatar || undefined}>{conversation.name?.charAt(0).toUpperCase() || "C"}</Avatar>
+            <Box
+              component={Link}
+              to={`/users/${otherMember.userId}`}
+              className="rounded-full transition-opacity hover:opacity-80"
+            >
+              <Badge
+                color="success"
+                variant="dot"
+                invisible={!isOtherMemberOnline}
+                overlap="circular"
+                sx={onlineBadgeSx}
+              >
+                <Avatar
+                  src={
+                    conversation.avatar || otherMember.user?.avatar || undefined
+                  }
+                >
+                  {conversation.name?.charAt(0).toUpperCase() || "C"}
+                </Avatar>
+              </Badge>
             </Box>
           </Tooltip>
         ) : (
-          <Avatar src={conversation.avatar || undefined}>{conversation.name?.charAt(0).toUpperCase() || "C"}</Avatar>
+          <Avatar src={conversation.avatar || undefined}>
+            {conversation.name?.charAt(0).toUpperCase() || "C"}
+          </Avatar>
         )}
         <Box className="min-w-0 flex-1">
-          <Typography variant="subtitle1" noWrap className="font-bold">{conversation.name}</Typography>
-          <Typography variant="caption" color="text.secondary">
-            {conversation.members.length} members
+          <Typography variant="subtitle1" noWrap className="font-bold">
+            {conversation.name}
+          </Typography>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            className="inline-block -translate-y-[5px]"
+          >
+            {otherMember
+              ? isOtherMemberOnline
+                ? "Đang online"
+                : "Offline"
+              : `${conversation.members.length} members`}
           </Typography>
         </Box>
         {otherMember && onStartCall ? (
@@ -112,17 +173,22 @@ function ChatWindow({
             onDelete={onDelete}
           />
         ))}
-        {typingUsers.length ? (
-          <Typography className="!text-[13px] italic !text-slate-500">{typingUsers.map((user) => user.fullName || user.username).join(", ")} dang nhap...</Typography>
-        ) : null}
         <div ref={bottomRef} />
       </Box>
 
       {replyTarget ? (
-        <Stack direction="row" alignItems="center" className="border-t border-slate-200 bg-[#eff6ff] px-3.5 py-2">
+        <Stack
+          direction="row"
+          alignItems="center"
+          className="border-t border-slate-200 bg-[#eff6ff] px-3.5 py-2"
+        >
           <Box className="min-w-0 flex-1">
-            <Typography variant="caption">Replying to {replyTarget.sender?.fullName || "message"}</Typography>
-            <Typography variant="body2" noWrap>{replyTarget.content}</Typography>
+            <Typography variant="caption">
+              Replying to {replyTarget.sender?.fullName || "message"}
+            </Typography>
+            <Typography variant="body2" noWrap>
+              {replyTarget.content}
+            </Typography>
           </Box>
           <IconButton size="small" onClick={onCancelReply}>
             <CloseRoundedIcon fontSize="small" />
@@ -130,7 +196,13 @@ function ChatWindow({
         </Stack>
       ) : null}
 
-      <Stack component="form" direction="row" spacing={1} className="border-t border-slate-200 px-3.5 py-3 max-[560px]:p-2.5" onSubmit={handleSubmit}>
+      <Stack
+        component="form"
+        direction="row"
+        spacing={1}
+        className="border-t border-slate-200 px-3.5 py-3 max-[560px]:p-2.5"
+        onSubmit={handleSubmit}
+      >
         <TextField
           fullWidth
           size="small"

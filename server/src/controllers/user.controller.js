@@ -70,6 +70,14 @@ async function onlineFriends(req, res) {
   });
 }
 
+async function saveFcmToken(req, res) {
+  const result = await userService.saveFcmToken(req.user, req.body.token);
+  return success(res, req, {
+    message: "FCM token saved",
+    data: result
+  });
+}
+
 module.exports = {
   me,
   updateMe,
@@ -78,5 +86,6 @@ module.exports = {
   uploadAvatar,
   uploadCover,
   posts,
-  onlineFriends
+  onlineFriends,
+  saveFcmToken
 };

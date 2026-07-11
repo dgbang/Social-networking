@@ -15,6 +15,12 @@ router.use(requireAuth);
 
 router.get("/me", asyncHandler(userController.me));
 router.get("/online-friends", asyncHandler(userController.onlineFriends));
+router.post(
+  "/fcm-token",
+  [body("token").isString().trim().isLength({ min: 10, max: 4096 }).withMessage("Valid FCM token is required")],
+  validate,
+  asyncHandler(userController.saveFcmToken)
+);
 router.put(
   "/me",
   [

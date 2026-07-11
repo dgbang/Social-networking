@@ -228,4 +228,26 @@ describe("chatService messages", () => {
     expect(member.update).toHaveBeenCalledWith(expect.objectContaining({ lastReadAt: expect.any(Date) }));
     expect(result.conversationId).toBe("conv-1");
   });
+
+  it("summarizes unread messages across conversations", async () => {
+    ConversationMember.findAll.mockResolvedValue([
+      { conversationId: "conv-1", lastReadAt: new Date("2026-06-22T01:00:00.000Z") },
+      { conversationId: "conv-2", lastReadAt: null }
+    ]);
+    Message.count.mockResolvedValueOnce(2).mockResolvedValueOnce(0);
+
+    const summary = await chatService.getUnreadSummary("user-a");
+
+    expect(Message.count).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        where: expect.objectContaining({
+          conversationId: "conv-1",
+          senderId: expect.any(Object),
+          createdAt: expect.any(Object)
+        })
+      })
+    );
+    expect(summary).toEqual({ unreadCount: 2, unreadConversations: 1 });
+  });
 });

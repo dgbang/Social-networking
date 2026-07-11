@@ -1,19 +1,28 @@
 import { Alert, Box } from "@mui/material";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { deleteMessage, getConversations, getMessages, getOnlineFriends, sendMessage } from "../api/chatApi.js";
 import ChatWindow from "../components/chat/ChatWindow.jsx";
 import ConversationList from "../components/chat/ConversationList.jsx";
 import { useCall } from "../context/CallContext.jsx";
 import { createChatSocket, emitChatEvent } from "../socket/chatSocket.js";
+import { decrementChatUnreadCount, setActiveChatConversation, setChatUnreadCount } from "../store/chatNotificationsSlice.js";
+
+function sumUnreadCounts(items) {
+  return items.reduce((total, item) => total + (Number(item.unreadCount) || 0), 0);
+}
 
 function MessengerPage() {
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const accessToken = useSelector((state) => state.auth.accessToken);
+  const totalUnreadCount = useSelector((state) => state.chatNotifications.unreadCount);
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const socketRef = useRef(null);
   const selectedIdRef = useRef(null);
+  const conversationsRef = useRef([]);
   const [conversations, setConversations] = useState([]);
   const [selected, setSelected] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -22,7 +31,6 @@ function MessengerPage() {
   const [loadingConversations, setLoadingConversations] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [replyTarget, setReplyTarget] = useState(null);
-  const [typingUsers, setTypingUsers] = useState([]);
   const [onlineIds, setOnlineIds] = useState([]);
   const [error, setError] = useState("");
 
@@ -34,22 +42,51 @@ function MessengerPage() {
     selectedIdRef.current = selectedId || null;
   }, [selectedId]);
 
+  useEffect(() => {
+    conversationsRef.current = conversations;
+  }, [conversations]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(setActiveChatConversation(null));
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(setActiveChatConversation(selectedId || null));
+  }, [dispatch, selectedId]);
+
   async function loadConversations() {
     setLoadingConversations(true);
     setError("");
     try {
       const items = await getConversations();
+      conversationsRef.current = items;
       setConversations(items);
+      dispatch(setChatUnreadCount(sumUnreadCounts(items)));
       setSelected((current) => {
         const requested = items.find((item) => item.id === requestedConversationId);
         if (requested) return requested;
-        if (current) return items.find((item) => item.id === current.id) || items[0] || null;
-        return items[0] || null;
+        if (requestedConversationId) return current ? items.find((item) => item.id === current.id) || null : null;
+        return null;
       });
     } catch (err) {
       setError(err.response?.data?.message || "Khong tai duoc conversations.");
     } finally {
       setLoadingConversations(false);
+    }
+  }
+
+  function markConversationReadLocally(conversationId, fallbackUnreadCount = 0) {
+    const unreadCount = Number(conversationsRef.current.find((item) => item.id === conversationId)?.unreadCount ?? fallbackUnreadCount) || 0;
+    setConversations((items) => {
+      const next = items.map((item) => (item.id === conversationId && item.unreadCount > 0 ? { ...item, unreadCount: 0 } : item));
+      conversationsRef.current = next;
+      return next;
+    });
+    setSelected((current) => (current?.id === conversationId ? { ...current, unreadCount: 0 } : current));
+    if (unreadCount > 0) {
+      dispatch(decrementChatUnreadCount(unreadCount));
     }
   }
 
@@ -76,7 +113,11 @@ function MessengerPage() {
   }, [requestedConversationId]);
 
   useEffect(() => {
-    if (!requestedConversationId || conversations.length === 0) return;
+    if (!requestedConversationId) {
+      setSelected(null);
+      return;
+    }
+    if (conversations.length === 0) return;
     const requested = conversations.find((item) => item.id === requestedConversationId);
     if (requested && requested.id !== selectedId) {
       setSelected(requested);
@@ -89,8 +130,8 @@ function MessengerPage() {
       return;
     }
     setReplyTarget(null);
-    setTypingUsers([]);
     loadMessages(selectedId);
+    markConversationReadLocally(selectedId, selected?.unreadCount);
     socketRef.current?.emit("join_conversation", { conversationId: selectedId });
     socketRef.current?.emit("mark_read", { conversationId: selectedId });
   }, [selectedId]);
@@ -135,16 +176,6 @@ function MessengerPage() {
       }
     });
 
-    socket.on("user_typing", ({ conversationId, user: typingUser }) => {
-      if (conversationId !== selectedIdRef.current || typingUser.id === user?.id) return;
-      setTypingUsers((items) => (items.some((item) => item.id === typingUser.id) ? items : [...items, typingUser]));
-    });
-
-    socket.on("user_stop_typing", ({ conversationId, user: typingUser }) => {
-      if (conversationId !== selectedIdRef.current) return;
-      setTypingUsers((items) => items.filter((item) => item.id !== typingUser.id));
-    });
-
     socket.on("user_online", ({ userId }) => setOnlineIds((items) => (items.includes(userId) ? items : [...items, userId])));
     socket.on("user_offline", ({ userId }) => setOnlineIds((items) => items.filter((id) => id !== userId)));
     socket.on("online_users_list", ({ userIds }) => setOnlineIds(userIds || []));
@@ -159,9 +190,15 @@ function MessengerPage() {
   const selectedMessages = useMemo(() => messages, [messages]);
 
   function bumpConversation(items, conversationId, message, activeConversationId = selectedId) {
+    const shouldCountUnread = message?.senderId !== user?.id && activeConversationId !== conversationId;
     const next = items.map((item) =>
       item.id === conversationId
-        ? { ...item, lastMessage: message, lastMessageAt: message.createdAt, unreadCount: activeConversationId === conversationId ? 0 : (item.unreadCount || 0) + 1 }
+        ? {
+            ...item,
+            lastMessage: message,
+            lastMessageAt: message.createdAt,
+            unreadCount: activeConversationId === conversationId ? 0 : shouldCountUnread ? (item.unreadCount || 0) + 1 : item.unreadCount || 0
+          }
         : item
     );
     return next.sort((a, b) => new Date(b.lastMessageAt || b.createdAt).getTime() - new Date(a.lastMessageAt || a.createdAt).getTime());
@@ -216,16 +253,27 @@ function MessengerPage() {
     });
   }
 
+  function handleSelectConversation(conversation) {
+    setSelected(conversation);
+    navigate(`/messenger?conversationId=${conversation.id}`);
+  }
+
+  function handleBackToList() {
+    setSelected(null);
+    navigate("/messenger", { replace: true });
+  }
+
   return (
     <Box className={`grid h-[calc(100dvh-96px)] min-h-[480px] grid-cols-[minmax(280px,360px)_minmax(0,1fr)] gap-3 py-3 max-[820px]:h-[calc(100dvh-88px)] max-[820px]:grid-cols-1 ${selected ? "max-[820px]:[&_.conversation-list]:hidden" : "max-[820px]:[&_.chat-window]:hidden"}`}>
       {error ? <Alert severity="error" className="col-span-full">{error}</Alert> : null}
       <ConversationList
         conversations={conversations}
         selectedId={selectedId}
+        totalUnreadCount={totalUnreadCount}
         currentUser={user}
         loading={loadingConversations}
         onlineIds={onlineIds}
-        onSelect={setSelected}
+        onSelect={handleSelectConversation}
       />
       <ChatWindow
         conversation={selected}
@@ -233,16 +281,14 @@ function MessengerPage() {
         messages={selectedMessages}
         hasMore={hasMore}
         loading={loadingMessages}
-        typingUsers={typingUsers}
+        onlineIds={onlineIds}
         replyTarget={replyTarget}
         onCancelReply={() => setReplyTarget(null)}
-        onBack={() => setSelected(null)}
+        onBack={handleBackToList}
         onLoadMore={() => loadMessages(selectedId, cursor, true)}
         onSend={handleSend}
         onReply={setReplyTarget}
         onDelete={handleDelete}
-        onTyping={(conversationId) => socketRef.current?.emit("typing", { conversationId })}
-        onStopTyping={(conversationId) => socketRef.current?.emit("stop_typing", { conversationId })}
         onStartCall={handleStartCall}
       />
     </Box>

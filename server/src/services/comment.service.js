@@ -1,5 +1,6 @@
 const { sequelize, Post, Comment, User } = require("../models");
 const toPublicUser = require("../utils/publicUser");
+const notificationService = require("./notification.service");
 const postService = require("./post.service");
 
 function createError(status, code, message) {
@@ -77,7 +78,7 @@ async function createComment(postId, userId, payload) {
     throw createError(400, "COMMENT_VALIDATION_ERROR", "Comment content is required");
   }
 
-  await postService.getPost(postId, userId);
+  const post = await postService.getPost(postId, userId);
   const parentId = payload.parentId || null;
 
   if (parentId) {
@@ -102,6 +103,16 @@ async function createComment(postId, userId, payload) {
     await Post.increment("commentsCount", { by: 1, where: { id: postId }, transaction });
     return created;
   });
+
+  notificationService
+    .createNotification({
+      userId: post.userId,
+      fromUserId: userId,
+      type: "comment",
+      referenceId: postId,
+      content: "commented on your post"
+    })
+    .catch(() => {});
 
   return Comment.findByPk(comment.id, { include: [authorInclude()] }).then(serializeComment);
 }

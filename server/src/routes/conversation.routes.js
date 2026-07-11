@@ -14,6 +14,7 @@ const cursorRule = query("cursor").optional().isISO8601().withMessage("Cursor mu
 router.use(requireAuth);
 
 router.get("/", [limitRule], validate, asyncHandler(conversationController.list));
+router.get("/unread-count", asyncHandler(conversationController.unreadCount));
 router.post(
   "/",
   [

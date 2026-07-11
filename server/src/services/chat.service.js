@@ -167,6 +167,25 @@ async function getUnreadCount(conversationId, member, userId) {
   return Message.count({ where });
 }
 
+async function getUnreadSummary(userId) {
+  const members = await ConversationMember.findAll({
+    where: { userId, deletedAt: null },
+    attributes: ["conversationId", "lastReadAt"]
+  });
+
+  const counts = await Promise.all(
+    members.map(async (member) => ({
+      conversationId: member.conversationId,
+      unreadCount: await getUnreadCount(member.conversationId, member, userId)
+    }))
+  );
+
+  return {
+    unreadCount: counts.reduce((total, item) => total + item.unreadCount, 0),
+    unreadConversations: counts.filter((item) => item.unreadCount > 0).length
+  };
+}
+
 async function serializeConversation(conversation, userId) {
   const members = (conversation.members || []).map(serializeMember);
   const currentMember = (conversation.members || []).find((member) => member.userId === userId);
@@ -382,6 +401,7 @@ async function markRead(userId, conversationId) {
 module.exports = {
   ensureMember,
   getConversationMemberIds,
+  getUnreadSummary,
   listConversations,
   createConversation,
   listMessages,

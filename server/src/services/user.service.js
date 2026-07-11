@@ -110,11 +110,17 @@ async function listOnlineFriends(currentUserId) {
   return users.map((user) => toPublicUser(user, { includeEmail: false }));
 }
 
+async function saveFcmToken(user, token) {
+  await user.update({ fcmToken: String(token).trim() });
+  return { saved: true };
+}
+
 module.exports = {
   getMe,
   updateMe,
   getById,
   searchUsers,
   uploadProfileImage,
-  listOnlineFriends
+  listOnlineFriends,
+  saveFcmToken
 };

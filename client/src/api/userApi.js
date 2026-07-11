@@ -37,3 +37,8 @@ export async function uploadCover(file) {
   });
   return res.data.data.user;
 }
+
+export async function saveFcmToken(token) {
+  const res = await api.post("/users/fcm-token", { token });
+  return res.data.data;
+}

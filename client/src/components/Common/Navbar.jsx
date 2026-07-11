@@ -4,12 +4,12 @@ import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
 import GroupsRoundedIcon from "@mui/icons-material/GroupsRounded";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import PeopleAltRoundedIcon from "@mui/icons-material/PeopleAltRounded";
-import NotificationsRoundedIcon from "@mui/icons-material/NotificationsRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import StorefrontRoundedIcon from "@mui/icons-material/StorefrontRounded";
 import {
   AppBar,
   Avatar,
+  Badge,
   Box,
   Button,
   IconButton,
@@ -23,20 +23,37 @@ import {
   Toolbar,
   Typography
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { searchUsers } from "../../api/userApi.js";
+import NotificationBell from "../notifications/NotificationBell.jsx";
+import { createChatSocket } from "../../socket/chatSocket.js";
 import { logoutUser } from "../../store/authSlice.js";
+import { fetchChatUnreadCount, incrementChatUnreadCount, resetChatNotifications } from "../../store/chatNotificationsSlice.js";
+import {
+  fetchNotifications,
+  receiveNotification,
+  resetNotifications,
+  setNotificationUnreadCount
+} from "../../store/notificationSlice.js";
 
 function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const user = useSelector((state) => state.auth.user);
+  const accessToken = useSelector((state) => state.auth.accessToken);
+  const chatUnreadCount = useSelector((state) => state.chatNotifications.unreadCount);
+  const activeConversationId = useSelector((state) => state.chatNotifications.activeConversationId);
+  const activeConversationRef = useRef(null);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [searchOpen, setSearchOpen] = useState(false);
+
+  useEffect(() => {
+    activeConversationRef.current = activeConversationId;
+  }, [activeConversationId]);
 
   useEffect(() => {
     if (!user || query.trim().length < 2) {
@@ -55,6 +72,43 @@ function Navbar() {
 
     return () => window.clearTimeout(timeout);
   }, [query, user]);
+
+  useEffect(() => {
+    if (!user || !accessToken) {
+      dispatch(resetChatNotifications());
+      dispatch(resetNotifications());
+      return undefined;
+    }
+
+    dispatch(fetchChatUnreadCount());
+    dispatch(fetchNotifications({ limit: 8 }));
+    const socket = createChatSocket(accessToken);
+    if (!socket) return undefined;
+
+    function handleIncomingMessage({ conversationId, message }) {
+      if (!conversationId || message?.senderId === user.id || activeConversationRef.current === conversationId) {
+        return;
+      }
+      dispatch(incrementChatUnreadCount(1));
+    }
+
+    socket.on("connect", () => {
+      dispatch(fetchChatUnreadCount());
+      dispatch(fetchNotifications({ limit: 8 }));
+    });
+    socket.on("new_message", handleIncomingMessage);
+    socket.on("new_reply", handleIncomingMessage);
+    socket.on("new_notification", ({ notification }) => {
+      dispatch(receiveNotification(notification));
+    });
+    socket.on("notification_count", ({ unreadCount }) => {
+      dispatch(setNotificationUnreadCount(unreadCount));
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [accessToken, dispatch, user]);
 
   async function handleLogout() {
     await dispatch(logoutUser());
@@ -79,7 +133,21 @@ function Navbar() {
       elevation={0}
       className="z-[1200] !border-b !border-[#dddfe2] !bg-white/95 !text-[#050505] !shadow-[0_1px_2px_rgba(0,0,0,0.08)] backdrop-blur-xl"
     >
-      <Toolbar className="!grid !min-h-14 grid-cols-[auto_minmax(220px,360px)_minmax(260px,1fr)_auto] gap-3 !px-4 max-[1040px]:grid-cols-[auto_minmax(180px,1fr)_auto] max-[820px]:grid-cols-[auto_minmax(0,1fr)_auto]">
+      <Toolbar
+        className="!grid !min-h-14 gap-3 !px-4"
+        sx={{
+          gridTemplateColumns: "auto minmax(220px,360px) minmax(260px,1fr) auto",
+          "@media (max-width: 1279.95px)": {
+            gridTemplateColumns: "auto auto minmax(260px,1fr) auto"
+          },
+          "@media (max-width: 1040px)": {
+            gridTemplateColumns: "auto auto minmax(0,1fr)"
+          },
+          "@media (max-width: 639.95px)": {
+            gridTemplateColumns: "auto minmax(0,1fr)"
+          }
+        }}
+      >
         <Button
           component={Link}
           to={user ? "/dashboard" : "/login"}
@@ -91,7 +159,29 @@ function Navbar() {
         </Button>
 
         {user ? (
-          <Box className="relative hidden min-w-0 flex-1 sm:block">
+          <Box
+            className="relative hidden min-w-0 sm:flex sm:items-center"
+            sx={{
+              flex: "0 0 auto",
+              "@media (min-width: 1280px)": {
+                flex: "1 1 0%"
+              }
+            }}
+          >
+            <Tooltip title="Tim kiem">
+              <IconButton
+                aria-label="Tim kiem"
+                className="!h-11 !w-11 !rounded-full !border !border-[#ccd0d5] !bg-white !text-[#65676b] hover:!bg-[#f0f2f5]"
+                sx={{
+                  display: "inline-flex",
+                  "@media (min-width: 1280px)": {
+                    display: "none"
+                  }
+                }}
+              >
+                <SearchRoundedIcon />
+              </IconButton>
+            </Tooltip>
             <TextField
               fullWidth
               size="small"
@@ -110,6 +200,12 @@ function Navbar() {
                 }
               }}
               className="max-w-[420px] [&_.MuiOutlinedInput-root]:!rounded-full [&_.MuiOutlinedInput-root]:!bg-[#f0f2f5] [&_fieldset]:!border-0"
+              sx={{
+                display: "none",
+                "@media (min-width: 1280px)": {
+                  display: "block"
+                }
+              }}
             />
             {searchOpen && results.length > 0 ? (
               <Paper className="absolute left-0 top-12 z-30 w-full max-w-[420px] overflow-hidden" elevation={6}>
@@ -152,7 +248,13 @@ function Navbar() {
                       active ? "!bg-[#e7f3ff] !text-[#1877f2] after:absolute after:bottom-[-7px] after:h-1 after:w-10 after:rounded-full after:bg-[#1877f2] after:content-['']" : "!text-[#65676b]"
                     }`}
                   >
-                    {item.icon}
+                    {item.label === "Messenger" ? (
+                      <Badge color="error" badgeContent={chatUnreadCount} max={99} invisible={chatUnreadCount <= 0}>
+                        {item.icon}
+                      </Badge>
+                    ) : (
+                      item.icon
+                    )}
                   </IconButton>
                 </Tooltip>
               );
@@ -176,9 +278,7 @@ function Navbar() {
               >
                 {user.fullName}
               </Button>
-              <IconButton className="!bg-[#e4e6eb] !text-[#050505]" color="inherit" aria-label="Notifications">
-                <NotificationsRoundedIcon />
-              </IconButton>
+              <NotificationBell />
               <IconButton className="!bg-[#e4e6eb] !text-[#050505]" color="inherit" onClick={handleLogout} aria-label="Logout">
                 <LogoutRoundedIcon />
               </IconButton>

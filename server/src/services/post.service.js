@@ -1,6 +1,7 @@
 const { Op } = require("sequelize");
 const { sequelize, Post, User, Friendship, Like } = require("../models");
 const toPublicUser = require("../utils/publicUser");
+const notificationService = require("./notification.service");
 const uploadService = require("./upload.service");
 
 const PRIVACY = ["public", "friends", "private"];
@@ -327,7 +328,8 @@ async function toggleReaction(postId, userId, type = "like") {
 
   await findVisiblePost(postId, userId);
 
-  return sequelize.transaction(async (transaction) => {
+  let notificationTargetId = null;
+  const result = await sequelize.transaction(async (transaction) => {
     const post = await Post.findOne({
       where: { id: postId, isDeleted: false },
       transaction,
@@ -339,6 +341,7 @@ async function toggleReaction(postId, userId, type = "like") {
       await Like.create({ postId, userId, type }, { transaction });
       await post.increment("likesCount", { by: 1, transaction });
       await post.reload({ transaction });
+      notificationTargetId = post.userId;
       return { reaction: { type }, likesCount: post.likesCount };
     }
 
@@ -352,6 +355,20 @@ async function toggleReaction(postId, userId, type = "like") {
     await existing.update({ type }, { transaction });
     return { reaction: { type }, likesCount: post.likesCount };
   });
+
+  if (notificationTargetId) {
+    notificationService
+      .createNotification({
+        userId: notificationTargetId,
+        fromUserId: userId,
+        type: "like",
+        referenceId: postId,
+        content: `reacted ${type} to your post`
+      })
+      .catch(() => {});
+  }
+
+  return result;
 }
 
 async function sharePost(postId, userId, payload) {
@@ -376,6 +393,16 @@ async function sharePost(postId, userId, payload) {
     await Post.increment("sharesCount", { by: 1, where: { id: originalPost.id }, transaction });
     return post;
   });
+
+  notificationService
+    .createNotification({
+      userId: originalPost.userId,
+      fromUserId: userId,
+      type: "share",
+      referenceId: originalPost.id,
+      content: "shared your post"
+    })
+    .catch(() => {});
 
   return getPost(shared.id, userId);
 }

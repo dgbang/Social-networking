@@ -1,6 +1,7 @@
 const { Op } = require("sequelize");
 const { Friendship, User } = require("../models");
 const chatService = require("./chat.service");
+const notificationService = require("./notification.service");
 const toPublicUser = require("../utils/publicUser");
 
 function createError(status, code, message) {
@@ -31,6 +32,10 @@ async function findPair(userA, userB) {
   return Friendship.findOne({ where: pairWhere(userA, userB) });
 }
 
+function notifyFriendEvent(payload) {
+  notificationService.createNotification(payload).catch(() => {});
+}
+
 async function sendRequest(currentUserId, targetUserId) {
   if (currentUserId === targetUserId) {
     throw createError(400, "FRIEND_REQUEST_SELF", "Cannot send friend request to yourself");
@@ -45,6 +50,13 @@ async function sendRequest(currentUserId, targetUserId) {
       addresseeId: targetUserId,
       status: "pending"
     });
+    notifyFriendEvent({
+      userId: targetUserId,
+      fromUserId: currentUserId,
+      type: "friend_request",
+      referenceId: currentUserId,
+      content: "sent you a friend request"
+    });
     return existing;
   }
 
@@ -56,11 +68,19 @@ async function sendRequest(currentUserId, targetUserId) {
     throw createError(409, "FRIEND_REQUEST_EXISTS", "Friend request already exists");
   }
 
-  return Friendship.create({
+  const friendship = await Friendship.create({
     requesterId: currentUserId,
     addresseeId: targetUserId,
     status: "pending"
   });
+  notifyFriendEvent({
+    userId: targetUserId,
+    fromUserId: currentUserId,
+    type: "friend_request",
+    referenceId: currentUserId,
+    content: "sent you a friend request"
+  });
+  return friendship;
 }
 
 async function acceptRequest(currentUserId, requesterId) {
@@ -80,6 +100,13 @@ async function acceptRequest(currentUserId, requesterId) {
   const conversation = await chatService.createConversation(currentUserId, {
     type: "private",
     memberIds: [requesterId]
+  });
+  notifyFriendEvent({
+    userId: requesterId,
+    fromUserId: currentUserId,
+    type: "friend_accept",
+    referenceId: currentUserId,
+    content: "accepted your friend request"
   });
   return { friendship, conversation };
 }

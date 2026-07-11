@@ -138,7 +138,9 @@ function DashboardPage() {
           direction="row"
           alignItems="center"
           spacing={1.25}
-          className="mb-1.5 min-h-[54px] rounded-lg p-2 hover:!bg-[#e4e6eb]"
+          className="mb-1.5 min-h-[54px] rounded-lg p-2 hover:!bg-[#e4e6eb] !text-inherit !no-underline"
+          to="/profile"
+          component={Link}
         >
           <Avatar src={user?.avatar || undefined}>
             {displayName.charAt(0).toUpperCase()}

@@ -5,6 +5,11 @@ export async function getConversations() {
   return res.data.data.conversations;
 }
 
+export async function getChatUnreadSummary() {
+  const res = await api.get("/conversations/unread-count");
+  return res.data.data;
+}
+
 export async function createConversation(payload) {
   const res = await api.post("/conversations", payload);
   return res.data.data.conversation;

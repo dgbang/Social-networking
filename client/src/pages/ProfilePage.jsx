@@ -155,7 +155,9 @@ function ProfilePage() {
           saving={saving}
         />
       ) : null}
-      <UserPosts userId={profile?.id} currentUser={auth.user} />
+      <div className="mx-auto w-full max-w-[680px]">
+        <UserPosts userId={profile?.id} currentUser={auth.user} />
+      </div>
     </div>
   );
 }

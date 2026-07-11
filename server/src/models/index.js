@@ -10,6 +10,7 @@ const StoryView = require("./storyView");
 const Conversation = require("./conversation");
 const ConversationMember = require("./conversationMember");
 const Message = require("./message");
+const Notification = require("./notification");
 
 User.hasMany(AuthSession, { foreignKey: "userId", as: "sessions" });
 AuthSession.belongsTo(User, { foreignKey: "userId", as: "user" });
@@ -51,6 +52,10 @@ Message.belongsTo(Conversation, { foreignKey: "conversationId", as: "conversatio
 Message.belongsTo(User, { foreignKey: "senderId", as: "sender" });
 Message.belongsTo(Message, { foreignKey: "replyToId", as: "replyTo" });
 
+User.hasMany(Notification, { foreignKey: "userId", as: "notifications" });
+Notification.belongsTo(User, { foreignKey: "userId", as: "recipient" });
+Notification.belongsTo(User, { foreignKey: "fromUserId", as: "fromUser" });
+
 module.exports = {
   sequelize,
   User,
@@ -63,5 +68,6 @@ module.exports = {
   StoryView,
   Conversation,
   ConversationMember,
-  Message
+  Message,
+  Notification
 };

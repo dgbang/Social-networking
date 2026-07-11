@@ -15,6 +15,7 @@ const commentRoutes = require("./routes/comment.routes");
 const storyRoutes = require("./routes/story.routes");
 const conversationRoutes = require("./routes/conversation.routes");
 const messageRoutes = require("./routes/message.routes");
+const notificationRoutes = require("./routes/notification.routes");
 const { fail } = require("./utils/response");
 
 const app = express();
@@ -40,6 +41,7 @@ app.use("/api/comments", commentRoutes);
 app.use("/api/stories", storyRoutes);
 app.use("/api/conversations", conversationRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.use((req, res) =>
   fail(res, req, {

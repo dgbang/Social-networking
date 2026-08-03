@@ -139,11 +139,11 @@ async function findVisiblePost(postId, viewerId, options = {}) {
   });
 
   if (!post) {
-    throw createError(404, "POST_NOT_FOUND", "Post not found");
+    throw createError(404, "POST_NOT_FOUND", "Không tìm thấy bài viết");
   }
 
   if (!(await canViewPost(post, viewerId))) {
-    throw createError(403, "POST_FORBIDDEN", "You cannot view this post");
+    throw createError(403, "POST_FORBIDDEN", "Bạn không thể xem bài viết này");
   }
 
   return post;
@@ -154,12 +154,12 @@ async function createPost(userId, payload, files = []) {
   const privacy = payload.privacy || "public";
 
   if (!PRIVACY.includes(privacy)) {
-    throw createError(400, "INVALID_POST_PRIVACY", "Invalid post privacy");
+    throw createError(400, "INVALID_POST_PRIVACY", "Quyền riêng tư của bài viết không hợp lệ");
   }
 
   const media = await uploadPostFiles(files);
   if (!content && media.length === 0) {
-    throw createError(400, "POST_MEDIA_REQUIRED", "Post content or media is required");
+    throw createError(400, "POST_MEDIA_REQUIRED", "Bài viết cần có nội dung hoặc tệp đa phương tiện");
   }
 
   try {
@@ -193,7 +193,7 @@ async function listFeed(userId, { cursor, limit } = {}) {
   const createdAtFilter = cursor ? { createdAt: { [Op.lt]: new Date(cursor) } } : {};
 
   if (cursor && Number.isNaN(new Date(cursor).getTime())) {
-    throw createError(400, "INVALID_CURSOR", "Invalid cursor");
+    throw createError(400, "INVALID_CURSOR", "Con trỏ không hợp lệ");
   }
 
   const posts = await Post.findAll({
@@ -226,12 +226,12 @@ async function listFeed(userId, { cursor, limit } = {}) {
 async function listUserPosts(viewerId, userId, { cursor, limit } = {}) {
   const user = await User.findByPk(userId);
   if (!user) {
-    throw createError(404, "USER_NOT_FOUND", "User not found");
+    throw createError(404, "USER_NOT_FOUND", "Không tìm thấy người dùng");
   }
 
   const normalizedLimit = normalizeLimit(limit);
   if (cursor && Number.isNaN(new Date(cursor).getTime())) {
-    throw createError(400, "INVALID_CURSOR", "Invalid cursor");
+    throw createError(400, "INVALID_CURSOR", "Con trỏ không hợp lệ");
   }
 
   const privacyFilter =
@@ -273,16 +273,16 @@ async function getPost(postId, viewerId) {
 async function updatePost(postId, userId, payload, files = []) {
   const post = await Post.findOne({ where: { id: postId, isDeleted: false } });
   if (!post) {
-    throw createError(404, "POST_NOT_FOUND", "Post not found");
+    throw createError(404, "POST_NOT_FOUND", "Không tìm thấy bài viết");
   }
   if (post.userId !== userId) {
-    throw createError(403, "POST_UPDATE_FORBIDDEN", "You cannot update this post");
+    throw createError(403, "POST_UPDATE_FORBIDDEN", "Bạn không thể cập nhật bài viết này");
   }
 
   const update = {};
   if (Object.prototype.hasOwnProperty.call(payload, "privacy")) {
     if (!PRIVACY.includes(payload.privacy)) {
-      throw createError(400, "INVALID_POST_PRIVACY", "Invalid post privacy");
+      throw createError(400, "INVALID_POST_PRIVACY", "Quyền riêng tư của bài viết không hợp lệ");
     }
     update.privacy = payload.privacy;
   }
@@ -299,7 +299,7 @@ async function updatePost(postId, userId, payload, files = []) {
   const nextContent = Object.prototype.hasOwnProperty.call(update, "content") ? update.content : post.content;
   const nextMedia = replacingMedia ? newMedia : post.media || [];
   if (!normalizeContent(nextContent) && nextMedia.length === 0) {
-    throw createError(400, "POST_MEDIA_REQUIRED", "Post content or media is required");
+    throw createError(400, "POST_MEDIA_REQUIRED", "Bài viết cần có nội dung hoặc tệp đa phương tiện");
   }
 
   const oldMedia = post.media || [];
@@ -313,17 +313,17 @@ async function updatePost(postId, userId, payload, files = []) {
 async function deletePost(postId, userId) {
   const post = await Post.findOne({ where: { id: postId, isDeleted: false } });
   if (!post) {
-    throw createError(404, "POST_NOT_FOUND", "Post not found");
+    throw createError(404, "POST_NOT_FOUND", "Không tìm thấy bài viết");
   }
   if (post.userId !== userId) {
-    throw createError(403, "POST_DELETE_FORBIDDEN", "You cannot delete this post");
+    throw createError(403, "POST_DELETE_FORBIDDEN", "Bạn không thể xóa bài viết này");
   }
   await post.update({ isDeleted: true });
 }
 
 async function toggleReaction(postId, userId, type = "like") {
   if (!REACTIONS.includes(type)) {
-    throw createError(400, "INVALID_REACTION_TYPE", "Invalid reaction type");
+    throw createError(400, "INVALID_REACTION_TYPE", "Loại cảm xúc không hợp lệ");
   }
 
   await findVisiblePost(postId, userId);
@@ -363,7 +363,7 @@ async function toggleReaction(postId, userId, type = "like") {
         fromUserId: userId,
         type: "like",
         referenceId: postId,
-        content: `reacted ${type} to your post`
+        content: "đã bày tỏ cảm xúc về bài viết của bạn"
       })
       .catch(() => {});
   }
@@ -375,7 +375,7 @@ async function sharePost(postId, userId, payload) {
   const originalPost = await findVisiblePost(postId, userId);
   const privacy = payload.privacy || "public";
   if (!PRIVACY.includes(privacy)) {
-    throw createError(400, "INVALID_POST_PRIVACY", "Invalid post privacy");
+    throw createError(400, "INVALID_POST_PRIVACY", "Quyền riêng tư của bài viết không hợp lệ");
   }
 
   const content = normalizeContent(payload.content);
@@ -400,7 +400,7 @@ async function sharePost(postId, userId, payload) {
       fromUserId: userId,
       type: "share",
       referenceId: originalPost.id,
-      content: "shared your post"
+      content: "đã chia sẻ bài viết của bạn"
     })
     .catch(() => {});
 

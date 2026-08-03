@@ -14,7 +14,7 @@ function ResetPasswordPage() {
     event.preventDefault();
     try {
       await api.post(`/auth/reset-password/${token}`, { password });
-      setNotice({ type: "success", message: "Dat lai mat khau thanh cong. Ban co the dang nhap lai." });
+      setNotice({ type: "success", message: "Đặt lại mật khẩu thành công. Bạn có thể đăng nhập lại." });
     } catch (error) {
       setNotice({ type: "error", message: getApiError(error).message });
     }
@@ -26,13 +26,13 @@ function ResetPasswordPage() {
         <Link className="mb-6 inline-flex text-lg font-black text-[#0f5d99]" to="/login">
           SocialConnect
         </Link>
-        <h1 className="m-0 mb-4 text-[30px] font-bold leading-tight text-[#101828] max-[560px]:text-[25px]">Reset Password</h1>
+        <h1 className="m-0 mb-4 text-[30px] font-bold leading-tight text-[#101828] max-[560px]:text-[25px]">Đặt lại mật khẩu</h1>
         <form className="grid gap-3" onSubmit={submit}>
-          <AuthField label="New password" type="password" value={password} placeholder="New Password" onChange={setPassword} autoComplete="new-password" inputClassName="!h-12" />
-          <button className="min-h-10 w-full rounded-md bg-gradient-to-b from-[#2389ef] to-[#0f6fce] px-4 font-bold text-white" type="submit">Reset password</button>
+          <AuthField label="Mật khẩu mới" type="password" value={password} placeholder="Mật khẩu mới" onChange={setPassword} autoComplete="new-password" inputClassName="!h-12" />
+          <button className="min-h-10 w-full rounded-md bg-gradient-to-b from-[#2389ef] to-[#0f6fce] px-4 font-bold text-white" type="submit">Đặt lại mật khẩu</button>
         </form>
         <Notice type={notice?.type}>{notice?.message}</Notice>
-        <Link className="mt-3 inline-flex" to="/login">Back to login</Link>
+        <Link className="mt-3 inline-flex" to="/login">Quay lại đăng nhập</Link>
       </div>
     </section>
   );

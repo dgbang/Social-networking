@@ -28,12 +28,12 @@ import CommentSection from "./CommentSection.jsx";
 import PostMediaGrid from "./PostMediaGrid.jsx";
 
 const reactions = [
-  { type: "like", icon: "\u{1F44D}", label: "Thich" },
-  { type: "love", icon: "\u2764\uFE0F", label: "Yeu thich" },
-  { type: "haha", icon: "\u{1F606}", label: "Haha" },
-  { type: "wow", icon: "\u{1F62E}", label: "Wow" },
-  { type: "sad", icon: "\u{1F622}", label: "Buon" },
-  { type: "angry", icon: "\u{1F621}", label: "Phan no" }
+  { type: "like", icon: "\u{1F44D}", label: "Thích" },
+  { type: "love", icon: "\u2764\uFE0F", label: "Yêu thích" },
+  { type: "haha", icon: "\u{1F606}", label: "Ha ha" },
+  { type: "wow", icon: "\u{1F62E}", label: "Ngạc nhiên" },
+  { type: "sad", icon: "\u{1F622}", label: "Buồn" },
+  { type: "angry", icon: "\u{1F621}", label: "Phẫn nộ" }
 ];
 
 const reactionMap = reactions.reduce((map, reaction) => {
@@ -102,7 +102,7 @@ function PostCard({ post, currentUser, onChanged, onDeleted, onShare, onOpenDeta
 
   async function handleDelete() {
     setMenuAnchor(null);
-    if (!window.confirm("Xoa bai viet nay?")) return;
+    if (!window.confirm("Bạn có chắc muốn xóa bài viết này?")) return;
     await deletePost(post.id);
     onDeleted?.(post.id);
   }
@@ -112,13 +112,13 @@ function PostCard({ post, currentUser, onChanged, onDeleted, onShare, onOpenDeta
       <CardHeader
         className="!px-3.5 !pb-2 !pt-3 [&_.MuiAvatar-root]:!h-10 [&_.MuiAvatar-root]:!w-10 [&_.MuiCardHeader-subheader]:!text-[13px] [&_.MuiCardHeader-subheader]:!text-[#65676b] [&_.MuiCardHeader-title]:!text-[15px]"
         avatar={
-          <Avatar src={post.author?.avatar || undefined} alt={post.author?.fullName || "User"}>
+          <Avatar src={post.author?.avatar || undefined} alt={post.author?.fullName || "Người dùng"}>
             {post.author?.fullName?.charAt(0).toUpperCase() || "U"}
           </Avatar>
         }
         title={
           <Link to={`/users/${post.userId}`} className="font-semibold text-[#050505]">
-            {post.author?.fullName || "Unknown user"}
+            {post.author?.fullName || "Người dùng không xác định"}
           </Link>
         }
         subheader={
@@ -130,7 +130,7 @@ function PostCard({ post, currentUser, onChanged, onDeleted, onShare, onOpenDeta
         action={
           <>
             <IconButton
-              aria-label="Tuy chon bai viet"
+              aria-label="Tùy chọn bài viết"
               onClick={(event) => setMenuAnchor(event.currentTarget)}
               className="!h-9 !w-9 !bg-transparent !text-[#65676b] hover:!bg-[#f0f2f5]"
             >
@@ -145,13 +145,13 @@ function PostCard({ post, currentUser, onChanged, onDeleted, onShare, onOpenDeta
                   }}
                 >
                   <EditRoundedIcon fontSize="small" className="mr-2" />
-                  {editing ? "Dong sua" : "Sua bai viet"}
+                  {editing ? "Đóng chỉnh sửa" : "Sửa bài viết"}
                 </MenuItem>
               ) : null}
               {isOwner ? (
                 <MenuItem onClick={handleDelete}>
                   <DeleteOutlineRoundedIcon fontSize="small" className="mr-2" />
-                  Xoa bai viet
+                  Xóa bài viết
                 </MenuItem>
               ) : null}
             </Menu>
@@ -164,12 +164,12 @@ function PostCard({ post, currentUser, onChanged, onDeleted, onShare, onOpenDeta
           <TextField fullWidth multiline minRows={3} value={draft} onChange={(event) => setDraft(event.target.value)} />
           <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
             <Select size="small" value={privacy} onChange={(event) => setPrivacy(event.target.value)} className="min-w-36">
-              <MenuItem value="public">Public</MenuItem>
-              <MenuItem value="friends">Friends</MenuItem>
-              <MenuItem value="private">Private</MenuItem>
+              <MenuItem value="public">Công khai</MenuItem>
+              <MenuItem value="friends">Bạn bè</MenuItem>
+              <MenuItem value="private">Chỉ mình tôi</MenuItem>
             </Select>
             <Button type="submit" variant="contained" disabled={busy}>
-              {busy ? "Dang luu..." : "Luu"}
+              {busy ? "Đang lưu..." : "Lưu"}
             </Button>
           </Stack>
         </Box>
@@ -193,9 +193,9 @@ function PostCard({ post, currentUser, onChanged, onDeleted, onShare, onOpenDeta
           </Box>
           {post.originalPost ? (
             <Box className={`mx-4 mb-3 rounded-lg border border-slate-200 p-3 ${onOpenDetail ? "cursor-pointer" : ""}`} onClick={onOpenDetail ? () => onOpenDetail(post) : undefined}>
-              <Typography variant="subtitle2">{post.originalPost.author?.fullName || "Original post"}</Typography>
+              <Typography variant="subtitle2">{post.originalPost.author?.fullName || "Bài viết gốc"}</Typography>
               <Typography variant="body2" color="text.secondary">
-                {post.originalPost.content || "Bai viet co media"}
+                {post.originalPost.content || "Bài viết có tệp đa phương tiện"}
               </Typography>
               <PostMediaGrid media={post.originalPost.media} />
             </Box>
@@ -214,10 +214,10 @@ function PostCard({ post, currentUser, onChanged, onDeleted, onShare, onOpenDeta
         </Stack>
         <Stack direction="row" spacing={1.5}>
           <Button variant="text" size="small" onClick={onOpenDetail ? () => onOpenDetail(post) : () => setCommentsOpen((value) => !value)}>
-            {(post.commentsCount || 0).toLocaleString("vi-VN")} binh luan
+            {(post.commentsCount || 0).toLocaleString("vi-VN")} bình luận
           </Button>
           <Button variant="text" size="small" onClick={() => onShare?.(post)}>
-            {(post.sharesCount || 0).toLocaleString("vi-VN")} chia se
+            {(post.sharesCount || 0).toLocaleString("vi-VN")} chia sẻ
           </Button>
         </Stack>
       </Stack>
@@ -234,7 +234,7 @@ function PostCard({ post, currentUser, onChanged, onDeleted, onShare, onOpenDeta
             onClick={() => handleReact(activeReaction?.type || "like")}
           >
             <span className="mr-1 text-lg leading-none" aria-hidden="true">{activeReaction?.icon || reactionMap.like.icon}</span>
-            {activeReaction?.label || "Thich"}
+            {activeReaction?.label || "Thích"}
           </Button>
           <Box
             aria-hidden="true"
@@ -243,7 +243,7 @@ function PostCard({ post, currentUser, onChanged, onDeleted, onShare, onOpenDeta
           <Box
             className="pointer-events-none absolute bottom-[calc(100%+6px)] left-0 z-10 flex w-max max-w-[min(330px,82vw)] translate-y-2 scale-95 gap-1 rounded-full border border-[#ced0d4]/80 bg-white px-2 py-1.5 opacity-0 shadow-[0_8px_24px_rgba(20,32,45,0.18)] transition group-hover/reaction:pointer-events-auto group-hover/reaction:translate-y-0 group-hover/reaction:scale-100 group-hover/reaction:opacity-100 group-focus-within/reaction:pointer-events-auto group-focus-within/reaction:translate-y-0 group-focus-within/reaction:scale-100 group-focus-within/reaction:opacity-100"
             role="menu"
-            aria-label="Chon cam xuc"
+            aria-label="Chọn cảm xúc"
           >
             {reactions.map((reaction) => (
               <IconButton
@@ -261,10 +261,10 @@ function PostCard({ post, currentUser, onChanged, onDeleted, onShare, onOpenDeta
           </Box>
         </Box>
         <Button fullWidth className="!min-h-[38px] !rounded-md !bg-white !font-bold !text-[#65676b] hover:!bg-[#f0f2f5]" startIcon={<ChatBubbleOutlineRoundedIcon />} onClick={() => setCommentsOpen((value) => !value)}>
-          Binh luan
+          Bình luận
         </Button>
         <Button fullWidth className="!min-h-[38px] !rounded-md !bg-white !font-bold !text-[#65676b] hover:!bg-[#f0f2f5]" startIcon={<ShareRoundedIcon />} onClick={() => onShare?.(post)}>
-          Chia se
+          Chia sẻ
         </Button>
       </CardActions>
 

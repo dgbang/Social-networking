@@ -5,6 +5,14 @@ const toPublicUser = require("../utils/publicUser");
 const TYPES = ["like", "comment", "friend_request", "friend_accept", "share", "message"];
 const STATUSES = ["all", "unread", "read"];
 const MAX_LIMIT = 50;
+const CONTENT_BY_TYPE = {
+  like: "đã bày tỏ cảm xúc về bài viết của bạn",
+  comment: "đã bình luận về bài viết của bạn",
+  friend_request: "đã gửi cho bạn lời mời kết bạn",
+  friend_accept: "đã chấp nhận lời mời kết bạn của bạn",
+  share: "đã chia sẻ bài viết của bạn",
+  message: "đã gửi cho bạn một tin nhắn"
+};
 
 let socketServer = null;
 
@@ -41,7 +49,7 @@ function serializeNotification(notification) {
     fromUserId: notification.fromUserId,
     type: notification.type,
     referenceId: notification.referenceId,
-    content: notification.content,
+    content: CONTENT_BY_TYPE[notification.type] || notification.content,
     isRead: notification.isRead,
     fromUser: toPublicUser(notification.fromUser, { includeEmail: false }),
     createdAt: notification.createdAt,
@@ -84,10 +92,10 @@ async function createNotification(payload, options = {}) {
     return null;
   }
   if (!TYPES.includes(type)) {
-    throw createError(400, "INVALID_NOTIFICATION_TYPE", "Invalid notification type");
+    throw createError(400, "INVALID_NOTIFICATION_TYPE", "Loại thông báo không hợp lệ");
   }
   if (!content) {
-    throw createError(400, "NOTIFICATION_CONTENT_REQUIRED", "Notification content is required");
+    throw createError(400, "NOTIFICATION_CONTENT_REQUIRED", "Nội dung thông báo là bắt buộc");
   }
 
   const row = await Notification.create(
@@ -129,7 +137,7 @@ async function createOfflineMessageNotifications({ message, memberIds = [], isOn
         fromUserId: message.senderId,
         type: "message",
         referenceId: message.conversationId,
-        content: "sent you a message"
+        content: "đã gửi cho bạn một tin nhắn"
       })
     )
   );
@@ -138,10 +146,10 @@ async function createOfflineMessageNotifications({ message, memberIds = [], isOn
 async function listNotifications(userId, { cursor, limit, status = "all" } = {}) {
   const normalizedStatus = status || "all";
   if (!STATUSES.includes(normalizedStatus)) {
-    throw createError(400, "INVALID_NOTIFICATION_STATUS", "Invalid notification status");
+    throw createError(400, "INVALID_NOTIFICATION_STATUS", "Trạng thái thông báo không hợp lệ");
   }
   if (cursor && Number.isNaN(new Date(cursor).getTime())) {
-    throw createError(400, "INVALID_CURSOR", "Invalid cursor");
+    throw createError(400, "INVALID_CURSOR", "Con trỏ không hợp lệ");
   }
 
   const normalizedLimit = normalizeLimit(limit);
@@ -179,7 +187,7 @@ async function markRead(userId, notificationId) {
   });
 
   if (!notification) {
-    throw createError(404, "NOTIFICATION_NOT_FOUND", "Notification not found");
+    throw createError(404, "NOTIFICATION_NOT_FOUND", "Không tìm thấy thông báo");
   }
 
   if (!notification.isRead) {

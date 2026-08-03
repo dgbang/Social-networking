@@ -63,8 +63,8 @@ function NotificationBell() {
 
   return (
     <>
-      <Tooltip title="Notifications">
-        <IconButton className="!bg-[#e4e6eb] !text-[#050505]" color="inherit" aria-label="Notifications" onClick={handleOpen}>
+      <Tooltip title="Thông báo">
+        <IconButton className="!bg-[#e4e6eb] !text-[#050505]" color="inherit" aria-label="Thông báo" onClick={handleOpen}>
           <Badge color="error" badgeContent={unreadCount} max={99} invisible={unreadCount <= 0}>
             <NotificationsRoundedIcon />
           </Badge>
@@ -79,9 +79,9 @@ function NotificationBell() {
         }}
       >
         <Box className="flex items-center justify-between gap-3 px-4 pb-2 pt-3">
-          <Typography className="!text-xl !font-bold">Notifications</Typography>
-          <Tooltip title="Mark all read">
-            <IconButton size="small" onClick={handleReadAll} disabled={unreadCount <= 0}>
+          <Typography className="!text-xl !font-bold">Thông báo</Typography>
+          <Tooltip title="Đánh dấu tất cả là đã đọc">
+            <IconButton size="small" onClick={handleReadAll} disabled={unreadCount <= 0} aria-label="Đánh dấu tất cả là đã đọc">
               <DoneAllRoundedIcon fontSize="small" />
             </IconButton>
           </Tooltip>
@@ -95,7 +95,7 @@ function NotificationBell() {
           ) : (
             <Box className="px-3 py-8 text-center">
               <Typography className="!text-sm !font-semibold !text-[#65676b]">
-                {loading ? "Dang tai notifications..." : "Chua co notification nao."}
+                {loading ? "Đang tải thông báo..." : "Chưa có thông báo nào."}
               </Typography>
             </Box>
           )}
@@ -110,7 +110,7 @@ function NotificationBell() {
               navigate("/notifications");
             }}
           >
-            See all notifications
+            Xem tất cả thông báo
           </Button>
         </Box>
       </Menu>
@@ -121,7 +121,7 @@ function NotificationBell() {
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       >
         <Alert severity="info" variant="filled" onClose={() => dispatch(clearNotificationToast())}>
-          {toast ? `${toast.fromUser?.fullName || "Someone"} ${toast.content}` : ""}
+          {toast ? `${toast.fromUser?.fullName || "Ai đó"} ${toast.content}` : ""}
         </Alert>
       </Snackbar>
     </>

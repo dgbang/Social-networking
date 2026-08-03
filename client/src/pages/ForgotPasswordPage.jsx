@@ -15,7 +15,7 @@ function ForgotPasswordPage() {
       await api.post("/auth/forgot-password", { email });
       setNotice({
         type: "success",
-        message: "Neu email ton tai, he thong da gui email dat lai mat khau.",
+        message: "Nếu email tồn tại, hệ thống đã gửi email đặt lại mật khẩu.",
       });
     } catch (error) {
       setNotice({ type: "error", message: getApiError(error).message });
@@ -32,13 +32,13 @@ function ForgotPasswordPage() {
           SocialConnect
         </Link>
         <h1 className="m-0 mb-4 text-[30px] font-bold leading-tight text-[#101828] max-[560px]:text-[25px]">
-          Forgot Password
+          Quên mật khẩu
         </h1>
         <form className="grid gap-3" onSubmit={submit}>
           <AuthField
             label="Email"
             value={email}
-            placeholder="Email or Mobile Number"
+            placeholder="Email hoặc số điện thoại"
             onChange={setEmail}
             autoComplete="email"
             inputClassName="!h-12"
@@ -47,12 +47,12 @@ function ForgotPasswordPage() {
             className="min-h-10 w-full rounded-md bg-gradient-to-b from-[#2389ef] to-[#0f6fce] px-4 font-bold text-white hover:from-[#1a6fc5] hover:to-[#0c5a9e]"
             type="submit"
           >
-            Send reset email
+            Gửi email đặt lại mật khẩu
           </button>
         </form>
         <Notice type={notice?.type}>{notice?.message}</Notice>
         <Link className="mt-3 inline-flex" to="/login">
-          Back to login
+          Quay lại đăng nhập
         </Link>
       </div>
     </section>

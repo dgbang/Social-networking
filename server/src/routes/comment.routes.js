@@ -10,7 +10,7 @@ const router = express.Router();
 router.use(requireAuth);
 router.delete(
   "/:id",
-  [param("id").isUUID().withMessage("Valid comment id is required")],
+  [param("id").isUUID().withMessage("ID bình luận hợp lệ là bắt buộc")],
   validate,
   asyncHandler(commentController.remove)
 );

@@ -48,9 +48,9 @@ function ChatWindow({
         className="chat-window grid h-full min-h-0 content-center justify-items-center gap-1.5 rounded-lg border border-slate-200 p-4 text-center shadow-sm"
         elevation={0}
       >
-        <Typography variant="h6">Vui long chon box chat.</Typography>
+        <Typography variant="h6">Vui lòng chọn cuộc trò chuyện.</Typography>
         <Typography color="text.secondary">
-          Tin nhan cua ban se hien o day.
+          Tin nhắn của bạn sẽ hiển thị ở đây.
         </Typography>
       </Paper>
     );
@@ -95,11 +95,11 @@ function ChatWindow({
         spacing={1.25}
         className="border-b border-slate-200 p-3.5 max-[560px]:p-2.5"
       >
-        <IconButton className="md:!hidden" onClick={onBack}>
+        <IconButton className="md:!hidden" onClick={onBack} aria-label="Quay lại danh sách trò chuyện">
           <ArrowBackRoundedIcon />
         </IconButton>
         {otherMember ? (
-          <Tooltip title="Xem trang ca nhan">
+          <Tooltip title="Xem trang cá nhân">
             <Box
               component={Link}
               to={`/users/${otherMember.userId}`}
@@ -138,16 +138,16 @@ function ChatWindow({
           >
             {otherMember
               ? isOtherMemberOnline
-                ? "Đang online"
-                : "Offline"
-              : `${conversation.members.length} members`}
+                ? "Đang trực tuyến"
+                : "Ngoại tuyến"
+              : `${conversation.members.length} thành viên`}
           </Typography>
         </Box>
         {otherMember && onStartCall ? (
-          <Tooltip title="Video call">
+          <Tooltip title="Gọi video">
             <IconButton
               onClick={() => onStartCall(otherMember)}
-              aria-label="Start video call"
+              aria-label="Bắt đầu cuộc gọi video"
               className="!h-10 !w-10 !rounded-full !bg-[#1877F2] !text-white hover:!bg-[#DDDDDD]"
             >
               <VideocamRoundedIcon />
@@ -159,7 +159,7 @@ function ChatWindow({
       <Box className="flex flex-1 flex-col gap-2.5 overflow-y-auto bg-[radial-gradient(circle_at_top_left,rgba(24,119,242,0.08),transparent_26%),#f8fafc] p-4 max-[560px]:px-2.5 max-[560px]:py-3">
         {hasMore ? (
           <Button size="small" onClick={onLoadMore} disabled={loading}>
-            {loading ? "Dang tai..." : "Load older"}
+            {loading ? "Đang tải..." : "Tải tin nhắn cũ"}
           </Button>
         ) : null}
         {loading && messages.length === 0 ? <ChatMessagesSkeleton /> : null}
@@ -184,13 +184,13 @@ function ChatWindow({
         >
           <Box className="min-w-0 flex-1">
             <Typography variant="caption">
-              Replying to {replyTarget.sender?.fullName || "message"}
+              Đang trả lời {replyTarget.sender?.fullName || "tin nhắn"}
             </Typography>
             <Typography variant="body2" noWrap>
               {replyTarget.content}
             </Typography>
           </Box>
-          <IconButton size="small" onClick={onCancelReply}>
+          <IconButton size="small" onClick={onCancelReply} aria-label="Hủy trả lời">
             <CloseRoundedIcon fontSize="small" />
           </IconButton>
         </Stack>
@@ -208,10 +208,10 @@ function ChatWindow({
           size="small"
           value={content}
           onChange={handleChange}
-          placeholder="Nhap tin nhan..."
+          placeholder="Nhập tin nhắn..."
           autoComplete="off"
         />
-        <IconButton type="submit" color="primary" disabled={!content.trim()}>
+        <IconButton type="submit" color="primary" disabled={!content.trim()} aria-label="Gửi tin nhắn">
           <SendRoundedIcon />
         </IconButton>
       </Stack>

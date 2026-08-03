@@ -28,7 +28,7 @@ function CreateStoryModal({ open, user, busy = false, onClose, onCreate }) {
     event.preventDefault();
     setError("");
     if (!file) {
-      setError("Can chon anh hoac video de tao story.");
+      setError("Cần chọn ảnh hoặc video để tạo tin.");
       return;
     }
 
@@ -37,7 +37,7 @@ function CreateStoryModal({ open, user, busy = false, onClose, onCreate }) {
       reset();
       onClose();
     } catch (err) {
-      setError(err.response?.data?.message || "Khong tao duoc story.");
+      setError(err.response?.data?.message || "Không thể tạo tin.");
     }
   }
 
@@ -62,11 +62,11 @@ function CreateStoryModal({ open, user, busy = false, onClose, onCreate }) {
             <Stack direction="row" alignItems="center" spacing={1.2}>
               <Avatar src={user?.avatar || undefined}>{user?.fullName?.charAt(0).toUpperCase() || "U"}</Avatar>
               <Box>
-                <Typography variant="subtitle1" className="font-semibold">Create story</Typography>
-                <Typography variant="caption" color="text.secondary">Anh/video se het han sau 24h</Typography>
+                <Typography variant="subtitle1" className="font-semibold">Tạo tin</Typography>
+                <Typography variant="caption" color="text.secondary">Ảnh/video sẽ hết hạn sau 24 giờ</Typography>
               </Box>
             </Stack>
-            <IconButton type="button" onClick={handleClose} disabled={busy}>
+            <IconButton type="button" onClick={handleClose} disabled={busy} aria-label="Đóng">
               <CloseRoundedIcon />
             </IconButton>
           </Stack>
@@ -76,13 +76,13 @@ function CreateStoryModal({ open, user, busy = false, onClose, onCreate }) {
               preview.type === "video" ? (
                 <video src={preview.url} controls />
               ) : (
-                <img src={preview.url} alt="Story preview" />
+                <img src={preview.url} alt="Xem trước tin" />
               )
             ) : (
               <Stack alignItems="center" spacing={1.5}>
                 <AddPhotoAlternateRoundedIcon fontSize="large" />
-                <Typography variant="subtitle2">Chon anh hoac video</Typography>
-                <Typography variant="body2" color="text.secondary">Preview se hien tai day truoc khi dang.</Typography>
+                <Typography variant="subtitle2">Chọn ảnh hoặc video</Typography>
+                <Typography variant="body2" color="text.secondary">Bản xem trước sẽ hiển thị tại đây trước khi đăng.</Typography>
               </Stack>
             )}
             {text.trim() ? (
@@ -101,18 +101,18 @@ function CreateStoryModal({ open, user, busy = false, onClose, onCreate }) {
               onChange={(event) => setFile(event.target.files?.[0] || null)}
             />
             <Button type="button" variant="outlined" startIcon={<AddPhotoAlternateRoundedIcon />} onClick={() => fileInputRef.current?.click()}>
-              {file ? `Da chon: ${file.name}` : "Chon media"}
+              {file ? `Đã chọn: ${file.name}` : "Chọn ảnh/video"}
             </Button>
             <TextField
               value={text}
               onChange={(event) => setText(event.target.value)}
-              label="Text overlay"
+              label="Nội dung trên tin"
               slotProps={{ htmlInput: { maxLength: 160 } }}
               helperText={`${text.length}/160`}
             />
             {error ? <Alert severity="error">{error}</Alert> : null}
             <Button type="submit" variant="contained" size="large" disabled={busy || !file} endIcon={<SendRoundedIcon />}>
-              {busy ? "Dang dang..." : "Dang story"}
+              {busy ? "Đang đăng..." : "Đăng tin"}
             </Button>
           </Stack>
         </Box>

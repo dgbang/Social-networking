@@ -8,8 +8,8 @@ const asyncHandler = require("../utils/asyncHandler");
 
 const router = express.Router();
 
-const uuidParam = param("id").isUUID().withMessage("Valid user id is required");
-const limitRule = query("limit").optional().isInt({ min: 1, max: 50 }).withMessage("Limit must be from 1 to 50");
+const uuidParam = param("id").isUUID().withMessage("ID người dùng hợp lệ là bắt buộc");
+const limitRule = query("limit").optional().isInt({ min: 1, max: 50 }).withMessage("Giới hạn phải từ 1 đến 50");
 
 router.use(requireAuth);
 
@@ -17,15 +17,15 @@ router.get("/me", asyncHandler(userController.me));
 router.get("/online-friends", asyncHandler(userController.onlineFriends));
 router.post(
   "/fcm-token",
-  [body("token").isString().trim().isLength({ min: 10, max: 4096 }).withMessage("Valid FCM token is required")],
+  [body("token").isString().trim().isLength({ min: 10, max: 4096 }).withMessage("Token FCM hợp lệ là bắt buộc")],
   validate,
   asyncHandler(userController.saveFcmToken)
 );
 router.put(
   "/me",
   [
-    body("fullName").optional().trim().isLength({ min: 1, max: 80 }).withMessage("Full name must be 1-80 characters"),
-    body("bio").optional({ nullable: true }).trim().isLength({ max: 300 }).withMessage("Bio must be 300 characters or less")
+    body("fullName").optional().trim().isLength({ min: 1, max: 80 }).withMessage("Họ và tên phải có từ 1 đến 80 ký tự"),
+    body("bio").optional({ nullable: true }).trim().isLength({ max: 300 }).withMessage("Tiểu sử không được vượt quá 300 ký tự")
   ],
   validate,
   asyncHandler(userController.updateMe)
@@ -35,8 +35,8 @@ router.post("/me/cover", handleUpload("cover"), asyncHandler(userController.uplo
 router.get(
   "/search",
   [
-    query("q").trim().isLength({ min: 2 }).withMessage("Search query must be at least 2 characters"),
-    query("limit").optional().isInt({ min: 1, max: 20 }).withMessage("Limit must be from 1 to 20")
+    query("q").trim().isLength({ min: 2 }).withMessage("Từ khóa tìm kiếm phải có ít nhất 2 ký tự"),
+    query("limit").optional().isInt({ min: 1, max: 20 }).withMessage("Giới hạn phải từ 1 đến 20")
   ],
   validate,
   asyncHandler(userController.search)
@@ -47,7 +47,7 @@ router.get(
   [
     uuidParam,
     limitRule,
-    query("cursor").optional().isISO8601().withMessage("Cursor must be a valid datetime")
+    query("cursor").optional().isISO8601().withMessage("Con trỏ phải là thời gian hợp lệ")
   ],
   validate,
   asyncHandler(userController.posts)

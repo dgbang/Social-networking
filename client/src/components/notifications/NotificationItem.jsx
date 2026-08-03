@@ -3,7 +3,7 @@ import { Avatar, Box, ListItemAvatar, ListItemButton, ListItemText, Typography }
 import { formatNotificationTime } from "../../utils/notifications.js";
 
 function actorLabel(notification) {
-  return notification.fromUser?.fullName || notification.fromUser?.username || "Someone";
+  return notification.fromUser?.fullName || notification.fromUser?.username || "Ai đó";
 }
 
 function NotificationItem({ notification, dense = false, onClick }) {

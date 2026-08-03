@@ -57,14 +57,14 @@ function VideoCallScreen({
           <StreamVideo stream={remoteStream} className="h-full w-full object-cover" />
         ) : (
           <Box className="grid justify-items-center gap-2 text-center">
-            <Typography variant="h5">{otherUser?.fullName || otherUser?.username || "User"}</Typography>
-            <Typography className="!text-white/65">Dang ket noi video...</Typography>
+            <Typography variant="h5">{otherUser?.fullName || otherUser?.username || "Người dùng"}</Typography>
+            <Typography className="!text-white/65">Đang kết nối video...</Typography>
           </Box>
         )}
 
         {!remoteMediaState.videoEnabled ? (
           <Box className="absolute inset-0 grid place-items-center bg-black/70 text-center">
-            <Typography>{otherUser?.fullName || "Nguoi kia"} da tat camera</Typography>
+            <Typography>{otherUser?.fullName || "Người kia"} đã tắt camera</Typography>
           </Box>
         ) : null}
 
@@ -76,18 +76,18 @@ function VideoCallScreen({
           {mediaState.videoEnabled ? (
             <StreamVideo stream={localStream} muted className="h-full w-full object-cover" />
           ) : (
-            <Box className="grid h-full place-items-center text-center text-sm text-white/70">Camera off</Box>
+            <Box className="grid h-full place-items-center text-center text-sm text-white/70">Camera đã tắt</Box>
           )}
         </Box>
 
         <Stack direction="row" spacing={1.5} className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-black/45 p-2 backdrop-blur">
-          <IconButton className="!bg-white/15 !text-white hover:!bg-white/25" onClick={onToggleAudio} aria-label="Toggle microphone">
+          <IconButton className="!bg-white/15 !text-white hover:!bg-white/25" onClick={onToggleAudio} aria-label="Bật hoặc tắt micrô">
             {mediaState.audioEnabled ? <MicRoundedIcon /> : <MicOffRoundedIcon />}
           </IconButton>
-          <IconButton className="!bg-white/15 !text-white hover:!bg-white/25" onClick={onToggleVideo} aria-label="Toggle camera">
+          <IconButton className="!bg-white/15 !text-white hover:!bg-white/25" onClick={onToggleVideo} aria-label="Bật hoặc tắt camera">
             {mediaState.videoEnabled ? <VideocamRoundedIcon /> : <VideocamOffRoundedIcon />}
           </IconButton>
-          <IconButton className="!bg-[#ef4444] !text-white hover:!bg-[#dc2626]" onClick={onEnd} aria-label="End call">
+          <IconButton className="!bg-[#ef4444] !text-white hover:!bg-[#dc2626]" onClick={onEnd} aria-label="Kết thúc cuộc gọi">
             <CallEndRoundedIcon />
           </IconButton>
         </Stack>

@@ -36,7 +36,7 @@ function MediaItem({ item }) {
   );
 }
 
-function DetailMedia({ media = [], fallbackName = "User" }) {
+function DetailMedia({ media = [], fallbackName = "Người dùng" }) {
   if (!media.length) {
     return (
       <Box className="grid h-full place-items-center bg-[#111827] px-8 text-center text-white">
@@ -169,7 +169,7 @@ function PostDetailModal({
             >
               <DetailMedia
                 media={post.media}
-                fallbackName={post.author?.fullName || "User"}
+                fallbackName={post.author?.fullName || "Người dùng"}
               />
             </Box>
             <Box className="flex min-h-0 flex-col bg-[#f0f2f5]">

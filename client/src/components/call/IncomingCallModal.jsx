@@ -13,14 +13,14 @@ function IncomingCallModal({ call, onAnswer, onReject }) {
             {caller?.fullName?.charAt(0).toUpperCase() || "U"}
           </Avatar>
           <Box>
-            <Typography variant="h6">{caller?.fullName || caller?.username || "User"}</Typography>
-            <Typography variant="body2" className="!text-white/70">Incoming video call</Typography>
+            <Typography variant="h6">{caller?.fullName || caller?.username || "Người dùng"}</Typography>
+            <Typography variant="body2" className="!text-white/70">Cuộc gọi video đến</Typography>
           </Box>
           <Stack direction="row" spacing={3}>
-            <IconButton className="!h-14 !w-14 !bg-[#ef4444] !text-white hover:!bg-[#dc2626]" onClick={onReject} aria-label="Reject call">
+            <IconButton className="!h-14 !w-14 !bg-[#ef4444] !text-white hover:!bg-[#dc2626]" onClick={onReject} aria-label="Từ chối cuộc gọi">
               <CallEndRoundedIcon />
             </IconButton>
-            <IconButton className="!h-14 !w-14 !bg-[#22c55e] !text-white hover:!bg-[#16a34a]" onClick={onAnswer} aria-label="Answer call">
+            <IconButton className="!h-14 !w-14 !bg-[#22c55e] !text-white hover:!bg-[#16a34a]" onClick={onAnswer} aria-label="Trả lời cuộc gọi">
               <VideocamRoundedIcon />
             </IconButton>
           </Stack>

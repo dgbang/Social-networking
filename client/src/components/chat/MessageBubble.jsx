@@ -6,7 +6,7 @@ import { Avatar, Box, IconButton, Stack, Tooltip, Typography } from "@mui/materi
 function MessageBubble({ message, currentUser, conversationType = "private", onReply, onDelete }) {
   const senderId = message.senderId || message.sender?.id;
   const own = String(senderId || "") === String(currentUser?.id || "");
-  const senderName = message.sender?.fullName || message.sender?.username || "User";
+  const senderName = message.sender?.fullName || message.sender?.username || "Người dùng";
   const showSenderName = !own && conversationType === "group";
   const actionButtonClass = "!h-7 !w-7 !rounded-full !text-[#4b5563] hover:!bg-[#DDDDDD]";
   const bubbleTone = message.isDeleted
@@ -58,19 +58,19 @@ function MessageBubble({ message, currentUser, conversationType = "private", onR
             spacing={0.25}
             className={`mb-1 h-7 w-full ${actionsPosition} opacity-0 transition-opacity duration-150 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:pointer-events-auto`}
           >
-            <Tooltip title="Reply">
-              <IconButton size="small" className={actionButtonClass} onClick={() => onReply(message)}>
+            <Tooltip title="Trả lời">
+              <IconButton size="small" className={actionButtonClass} onClick={() => onReply(message)} aria-label="Trả lời">
                 <ReplyRoundedIcon fontSize="inherit" />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Copy">
-              <IconButton size="small" className={actionButtonClass} onClick={copyMessage}>
+            <Tooltip title="Sao chép">
+              <IconButton size="small" className={actionButtonClass} onClick={copyMessage} aria-label="Sao chép">
                 <ContentCopyRoundedIcon fontSize="inherit" />
               </IconButton>
             </Tooltip>
             {own ? (
-              <Tooltip title="Delete">
-                <IconButton size="small" className={actionButtonClass} onClick={() => onDelete(message.id)}>
+              <Tooltip title="Xóa">
+                <IconButton size="small" className={actionButtonClass} onClick={() => onDelete(message.id)} aria-label="Xóa">
                   <DeleteOutlineRoundedIcon fontSize="inherit" />
                 </IconButton>
               </Tooltip>
@@ -80,11 +80,11 @@ function MessageBubble({ message, currentUser, conversationType = "private", onR
         <Box className={`relative px-3.5 py-2.5 [overflow-wrap:anywhere] ${bubbleShape} ${bubbleTone}`}>
           {message.replyTo ? (
             <Box className={`mb-1.5 rounded-md border-l-[3px] px-2 py-1.5 ${own ? "border-white/70 bg-slate-900/10" : "border-[#1877f2] bg-[#1877f2]/10"}`}>
-              <Typography variant="caption">{message.replyTo.sender?.fullName || "Reply"}</Typography>
-              <Typography variant="body2" noWrap>{message.replyTo.isDeleted ? "Tin nhan da duoc thu hoi" : message.replyTo.content}</Typography>
+              <Typography variant="caption">{message.replyTo.sender?.fullName || "Trả lời"}</Typography>
+              <Typography variant="body2" noWrap>{message.replyTo.isDeleted ? "Tin nhắn đã được thu hồi" : message.replyTo.content}</Typography>
             </Box>
           ) : null}
-          <Typography className="!leading-relaxed">{message.isDeleted ? "Tin nhan da duoc thu hoi" : message.content}</Typography>
+          <Typography className="!leading-relaxed">{message.isDeleted ? "Tin nhắn đã được thu hồi" : message.content}</Typography>
         </Box>
       </Box>
     </Box>

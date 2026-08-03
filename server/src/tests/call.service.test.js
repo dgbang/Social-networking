@@ -63,7 +63,7 @@ describe("callService", () => {
       id: "message-call-1",
       conversationId: CONV_AB,
       senderId: USER_A,
-      content: "Call ended",
+      content: "Cuộc gọi đã kết thúc",
       type: "call",
       media: { status: "ended" },
       createdAt: new Date("2026-06-22T00:00:00.000Z")
@@ -103,7 +103,7 @@ describe("callService", () => {
     const call = await callService.startCall(USER_A, { receiverId: USER_B, conversationId: CONV_AB });
     callService.answerCall(USER_B, call.id);
 
-    expect(() => callService.relaySignal(USER_C, call.id, { type: "offer" })).toThrow("You are not part of this call");
+    expect(() => callService.relaySignal(USER_C, call.id, { type: "offer" })).toThrow("Bạn không tham gia cuộc gọi này");
   });
 
   it("ends a call and writes a call log", async () => {

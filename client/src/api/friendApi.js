@@ -19,6 +19,11 @@ export async function getFriendSuggestions() {
   return listOrEmpty(res.data?.data?.suggestions);
 }
 
+export async function getFriendRelationship(userId) {
+  const res = await api.get(`/friends/relationship/${userId}`);
+  return res.data.data.friendship;
+}
+
 export async function sendFriendRequest(userId) {
   const res = await api.post(`/friends/request/${userId}`);
   return res.data.data.friendship;

@@ -47,7 +47,7 @@ app.use((req, res) =>
   fail(res, req, {
     status: 404,
     code: "NOT_FOUND",
-    message: "Route not found"
+    message: "Không tìm thấy đường dẫn"
   })
 );
 

@@ -8,7 +8,7 @@ import { setCredentials } from "../store/authSlice.js";
 function OAuthCallbackPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [notice, setNotice] = useState({ type: "info", message: "Dang hoan tat dang nhap Google..." });
+  const [notice, setNotice] = useState({ type: "info", message: "Đang hoàn tất đăng nhập Google..." });
 
   useEffect(() => {
     async function finishLogin() {
@@ -16,7 +16,7 @@ function OAuthCallbackPage() {
       const accessToken = params.get("accessToken");
 
       if (!accessToken) {
-        setNotice({ type: "error", message: "Thieu token dang nhap Google." });
+        setNotice({ type: "error", message: "Thiếu token đăng nhập Google." });
         return;
       }
 
@@ -29,7 +29,7 @@ function OAuthCallbackPage() {
         dispatch(setCredentials({ accessToken, user: res.data.data.user }));
         navigate("/dashboard", { replace: true });
       } catch (error) {
-        setNotice({ type: "error", message: "Khong the hoan tat dang nhap Google." });
+        setNotice({ type: "error", message: "Không thể hoàn tất đăng nhập Google." });
       }
     }
 
@@ -42,9 +42,9 @@ function OAuthCallbackPage() {
         <Link className="mb-6 inline-flex text-lg font-black text-[#0f5d99]" to="/login">
           SocialConnect
         </Link>
-        <h1 className="m-0 mb-4 text-[30px] font-bold leading-tight text-[#101828] max-[560px]:text-[25px]">Google Login</h1>
+        <h1 className="m-0 mb-4 text-[30px] font-bold leading-tight text-[#101828] max-[560px]:text-[25px]">Đăng nhập Google</h1>
         <Notice type={notice.type}>{notice.message}</Notice>
-        {notice.type === "error" ? <Link className="mt-3 inline-flex" to="/login">Back to login</Link> : null}
+        {notice.type === "error" ? <Link className="mt-3 inline-flex" to="/login">Quay lại đăng nhập</Link> : null}
       </div>
     </section>
   );

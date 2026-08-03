@@ -42,9 +42,9 @@ function NotificationsPage() {
           </Box>
           <Box className="min-w-0">
             <Typography component="h1" className="!text-2xl !font-bold !tracking-normal">
-              Notifications
+              Thông báo
             </Typography>
-            <Typography className="!text-sm !text-[#65676b]">{unreadCount} unread</Typography>
+            <Typography className="!text-sm !text-[#65676b]">{unreadCount} chưa đọc</Typography>
           </Box>
         </Box>
         <Button
@@ -54,7 +54,7 @@ function NotificationsPage() {
           onClick={() => dispatch(readAllNotifications())}
           className="!rounded-md !bg-[#1877f2] !font-semibold !normal-case"
         >
-          Mark all read
+          Đánh dấu tất cả là đã đọc
         </Button>
       </Box>
 
@@ -65,8 +65,8 @@ function NotificationsPage() {
           variant="fullWidth"
           className="!min-h-11"
         >
-          <Tab label="Tat ca" value="all" className="!min-h-11 !normal-case" />
-          <Tab label="Chua doc" value="unread" className="!min-h-11 !normal-case" />
+          <Tab label="Tất cả" value="all" className="!min-h-11 !normal-case" />
+          <Tab label="Chưa đọc" value="unread" className="!min-h-11 !normal-case" />
         </Tabs>
         <Divider />
         {error ? <Alert severity="error">{error}</Alert> : null}
@@ -78,7 +78,7 @@ function NotificationsPage() {
           ) : (
             <Box className="px-4 py-12 text-center">
               <Typography className="!font-semibold !text-[#65676b]">
-                {loading ? "Dang tai notifications..." : "Khong co notification phu hop."}
+                {loading ? "Đang tải thông báo..." : "Không có thông báo phù hợp."}
               </Typography>
             </Box>
           )}
@@ -86,7 +86,7 @@ function NotificationsPage() {
         {hasMore ? (
           <Box className="border-t border-[#dddfe2] p-3">
             <Button fullWidth disabled={loading} onClick={handleLoadMore} className="!rounded-md !font-semibold !normal-case">
-              Load more
+              Tải thêm
             </Button>
           </Box>
         ) : null}

@@ -15,12 +15,12 @@ export function createChatSocket(accessToken) {
 
 export function emitChatEvent(socket, eventName, payload, timeoutMs = 7000) {
   if (!socket?.connected) {
-    return Promise.reject(new Error("Socket is not connected"));
+    return Promise.reject(new Error("Socket chưa kết nối."));
   }
 
   return new Promise((resolve, reject) => {
     const timeout = window.setTimeout(() => {
-      reject(new Error("Socket request timed out"));
+      reject(new Error("Yêu cầu socket đã hết thời gian chờ."));
     }, timeoutMs);
 
     socket.emit(eventName, payload, (response = {}) => {
@@ -29,7 +29,7 @@ export function emitChatEvent(socket, eventName, payload, timeoutMs = 7000) {
         resolve(response);
         return;
       }
-      reject(new Error(response.error?.message || "Socket request failed"));
+      reject(new Error(response.error?.message || "Yêu cầu socket thất bại."));
     });
   });
 }

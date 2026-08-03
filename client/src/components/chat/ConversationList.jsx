@@ -2,9 +2,9 @@ import { Avatar, Badge, Box, List, ListItemButton, ListItemText, Paper, Stack, T
 import { ConversationListSkeleton } from "../Common/Skeletons.jsx";
 
 function preview(conversation) {
-  if (!conversation.lastMessage) return "Chua co tin nhan";
-  if (conversation.lastMessage.isDeleted) return "Tin nhan da duoc thu hoi";
-  return conversation.lastMessage.content || "Media";
+  if (!conversation.lastMessage) return "Chưa có tin nhắn";
+  if (conversation.lastMessage.isDeleted) return "Tin nhắn đã được thu hồi";
+  return conversation.lastMessage.content || "Tệp đa phương tiện";
 }
 
 function ConversationList({ conversations, selectedId, totalUnreadCount = 0, loading, onlineIds = [], currentUser, onSelect }) {
@@ -13,14 +13,14 @@ function ConversationList({ conversations, selectedId, totalUnreadCount = 0, loa
       <Stack direction="row" alignItems="center" justifyContent="space-between" className="border-b border-slate-200 p-3.5 max-[560px]:p-2.5">
         <Box>
           <Stack direction="row" alignItems="center" spacing={1}>
-            <Typography variant="h5">Chats</Typography>
+            <Typography variant="h5">Trò chuyện</Typography>
             {totalUnreadCount > 0 ? (
               <Box className="grid h-[22px] min-w-[22px] place-items-center rounded-full bg-[#e41e3f] px-1.5 text-xs font-extrabold text-white">
                 {totalUnreadCount > 99 ? "99+" : totalUnreadCount}
               </Box>
             ) : null}
           </Stack>
-          <Typography variant="body2" color="text.secondary">Tin nhan realtime</Typography>
+          <Typography variant="body2" color="text.secondary">Tin nhắn theo thời gian thực</Typography>
         </Box>
       </Stack>
 
@@ -28,8 +28,8 @@ function ConversationList({ conversations, selectedId, totalUnreadCount = 0, loa
 
       {!loading && conversations.length === 0 ? (
         <Box className="grid min-h-[220px] content-center justify-items-center gap-1.5 p-4 text-center">
-          <Typography variant="subtitle2">Chua co conversation.</Typography>
-          <Typography variant="body2" color="text.secondary">Ket ban hoac vao profile ban be de bat dau nhan tin.</Typography>
+          <Typography variant="subtitle2">Chưa có cuộc trò chuyện.</Typography>
+          <Typography variant="body2" color="text.secondary">Kết bạn hoặc vào trang cá nhân của bạn bè để bắt đầu nhắn tin.</Typography>
         </Box>
       ) : null}
 

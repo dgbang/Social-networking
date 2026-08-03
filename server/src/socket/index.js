@@ -11,7 +11,7 @@ const { registerCallHandlers, handleCallDisconnect } = require("./callHandlers")
 function socketError(socket, error) {
   socket.emit("socket_error", {
     code: error.code || "SOCKET_ERROR",
-    message: error.message || "Socket error"
+    message: error.message || "Lỗi socket"
   });
 }
 
@@ -62,22 +62,23 @@ function setupSocket(server) {
     try {
       const token = socket.handshake.auth?.token;
       if (!token) {
-        const error = new Error("Missing socket token");
+        const error = new Error("Thiếu token socket");
         error.code = "UNAUTHORIZED";
         return next(error);
       }
       const payload = verifyAccessToken(token);
       const user = await User.findByPk(payload.sub);
       if (!user) {
-        const error = new Error("Invalid socket token");
+        const error = new Error("Token socket không hợp lệ");
         error.code = "UNAUTHORIZED";
         return next(error);
       }
       socket.data.user = user;
       return next();
     } catch (error) {
-      error.code = "UNAUTHORIZED";
-      return next(error);
+      const authError = new Error("Token socket không hợp lệ hoặc đã hết hạn");
+      authError.code = "UNAUTHORIZED";
+      return next(authError);
     }
   });
 

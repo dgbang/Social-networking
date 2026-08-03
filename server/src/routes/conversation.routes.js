@@ -7,9 +7,9 @@ const asyncHandler = require("../utils/asyncHandler");
 
 const router = express.Router();
 
-const conversationIdParam = param("id").isUUID().withMessage("Valid conversation id is required");
-const limitRule = query("limit").optional().isInt({ min: 1, max: 50 }).withMessage("Limit must be from 1 to 50");
-const cursorRule = query("cursor").optional().isISO8601().withMessage("Cursor must be a valid datetime");
+const conversationIdParam = param("id").isUUID().withMessage("ID cuộc trò chuyện hợp lệ là bắt buộc");
+const limitRule = query("limit").optional().isInt({ min: 1, max: 50 }).withMessage("Giới hạn phải từ 1 đến 50");
+const cursorRule = query("cursor").optional().isISO8601().withMessage("Con trỏ phải là thời gian hợp lệ");
 
 router.use(requireAuth);
 
@@ -18,10 +18,10 @@ router.get("/unread-count", asyncHandler(conversationController.unreadCount));
 router.post(
   "/",
   [
-    body("type").isIn(["private", "group"]).withMessage("Invalid conversation type"),
-    body("memberIds").isArray({ min: 1 }).withMessage("Member ids are required"),
-    body("memberIds.*").isUUID().withMessage("Valid member id is required"),
-    body("name").optional({ nullable: true }).trim().isLength({ max: 80 }).withMessage("Name is too long")
+    body("type").isIn(["private", "group"]).withMessage("Loại cuộc trò chuyện không hợp lệ"),
+    body("memberIds").isArray({ min: 1 }).withMessage("Danh sách ID thành viên là bắt buộc"),
+    body("memberIds.*").isUUID().withMessage("ID thành viên hợp lệ là bắt buộc"),
+    body("name").optional({ nullable: true }).trim().isLength({ max: 80 }).withMessage("Tên không được vượt quá 80 ký tự")
   ],
   validate,
   asyncHandler(conversationController.create)
@@ -31,8 +31,8 @@ router.post(
   "/:id/messages",
   [
     conversationIdParam,
-    body("content").isString().trim().isLength({ min: 1, max: 5000 }).withMessage("Message content must be 1-5000 characters"),
-    body("replyToId").optional({ nullable: true }).isUUID().withMessage("Valid reply message id is required")
+    body("content").isString().trim().isLength({ min: 1, max: 5000 }).withMessage("Nội dung tin nhắn phải có từ 1 đến 5.000 ký tự"),
+    body("replyToId").optional({ nullable: true }).isUUID().withMessage("ID tin nhắn được trả lời hợp lệ là bắt buộc")
   ],
   validate,
   asyncHandler(conversationController.createMessage)

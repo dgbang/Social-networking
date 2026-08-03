@@ -6,7 +6,7 @@ async function create(req, res) {
   const post = await postService.createPost(req.user.id, req.body, req.files || []);
   return success(res, req, {
     status: 201,
-    message: "Post created",
+    message: "Đã tạo bài viết",
     data: { post }
   });
 }
@@ -14,7 +14,7 @@ async function create(req, res) {
 async function feed(req, res) {
   const result = await postService.listFeed(req.user.id, req.query);
   return success(res, req, {
-    message: "Newsfeed",
+    message: "Bảng tin",
     data: { posts: result.posts },
     meta: {
       nextCursor: result.nextCursor,
@@ -26,7 +26,7 @@ async function feed(req, res) {
 async function detail(req, res) {
   const post = await postService.getPost(req.params.id, req.user.id);
   return success(res, req, {
-    message: "Post detail",
+    message: "Chi tiết bài viết",
     data: { post }
   });
 }
@@ -34,7 +34,7 @@ async function detail(req, res) {
 async function update(req, res) {
   const post = await postService.updatePost(req.params.id, req.user.id, req.body, req.files || []);
   return success(res, req, {
-    message: "Post updated",
+    message: "Đã cập nhật bài viết",
     data: { post }
   });
 }
@@ -42,7 +42,7 @@ async function update(req, res) {
 async function remove(req, res) {
   await postService.deletePost(req.params.id, req.user.id);
   return success(res, req, {
-    message: "Post deleted",
+    message: "Đã xóa bài viết",
     data: null
   });
 }
@@ -50,7 +50,7 @@ async function remove(req, res) {
 async function react(req, res) {
   const result = await postService.toggleReaction(req.params.id, req.user.id, req.body.type || "like");
   return success(res, req, {
-    message: "Reaction updated",
+    message: "Đã cập nhật cảm xúc",
     data: result
   });
 }
@@ -58,7 +58,7 @@ async function react(req, res) {
 async function listComments(req, res) {
   const result = await commentService.listComments(req.params.id, req.user.id, req.query);
   return success(res, req, {
-    message: "Post comments",
+    message: "Bình luận của bài viết",
     data: { comments: result.comments },
     meta: {
       nextCursor: result.nextCursor,
@@ -71,7 +71,7 @@ async function createComment(req, res) {
   const comment = await commentService.createComment(req.params.id, req.user.id, req.body);
   return success(res, req, {
     status: 201,
-    message: "Comment created",
+    message: "Đã tạo bình luận",
     data: { comment }
   });
 }
@@ -80,7 +80,7 @@ async function share(req, res) {
   const post = await postService.sharePost(req.params.id, req.user.id, req.body);
   return success(res, req, {
     status: 201,
-    message: "Post shared",
+    message: "Đã chia sẻ bài viết",
     data: { post }
   });
 }

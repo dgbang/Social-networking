@@ -43,7 +43,7 @@ function oauthErrorRedirect(code) {
 
 function logOAuthError(error) {
   if (env.nodeEnv === "test") return;
-  console.error("Google OAuth failed", {
+  console.error("Đăng nhập Google OAuth thất bại", {
     code: error.code || "GOOGLE_LOGIN_FAILED",
     message: error.message
   });
@@ -53,7 +53,7 @@ async function register(req, res) {
   const user = await authService.register(req.body);
   return success(res, req, {
     status: 201,
-    message: "Register successful. You can login now.",
+    message: "Đăng ký thành công. Bạn có thể đăng nhập ngay.",
     data: { user }
   });
 }
@@ -65,7 +65,7 @@ async function login(req, res) {
 
   res.cookie("refreshToken", result.refreshToken, refreshCookieOptions);
   return success(res, req, {
-    message: "Login successful",
+    message: "Đăng nhập thành công",
     data: {
       accessToken: result.accessToken,
       user: result.user
@@ -112,7 +112,7 @@ async function googleCallback(req, res) {
 async function refresh(req, res) {
   const result = await authService.refresh(req);
   return success(res, req, {
-    message: "Token refreshed",
+    message: "Đã làm mới token",
     data: result
   });
 }
@@ -121,7 +121,7 @@ async function logout(req, res) {
   await authService.logout(req);
   clearAuthCookies(res);
   return success(res, req, {
-    message: "Logout successful",
+    message: "Đăng xuất thành công",
     data: null
   });
 }
@@ -129,7 +129,7 @@ async function logout(req, res) {
 async function forgotPassword(req, res) {
   await authService.forgotPassword(req.body.email);
   return success(res, req, {
-    message: "If the email exists, a reset email has been sent.",
+    message: "Nếu email tồn tại, hệ thống đã gửi email đặt lại mật khẩu.",
     data: null
   });
 }
@@ -138,14 +138,14 @@ async function resetPassword(req, res) {
   await authService.resetPassword(req.params.token, req.body.password);
   clearAuthCookies(res);
   return success(res, req, {
-    message: "Password reset successful",
+    message: "Đặt lại mật khẩu thành công",
     data: null
   });
 }
 
 async function me(req, res) {
   return success(res, req, {
-    message: "Current user",
+    message: "Người dùng hiện tại",
     data: { user: toPublicUser(req.user) }
   });
 }

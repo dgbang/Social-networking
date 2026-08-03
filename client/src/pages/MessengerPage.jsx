@@ -71,7 +71,7 @@ function MessengerPage() {
         return null;
       });
     } catch (err) {
-      setError(err.response?.data?.message || "Khong tai duoc conversations.");
+      setError(err.response?.data?.message || "Không thể tải cuộc trò chuyện.");
     } finally {
       setLoadingConversations(false);
     }
@@ -99,7 +99,7 @@ function MessengerPage() {
       setCursor(result.nextCursor);
       setHasMore(Boolean(result.hasMore));
     } catch (err) {
-      setError(err.response?.data?.message || "Khong tai duoc messages.");
+      setError(err.response?.data?.message || "Không thể tải tin nhắn.");
     } finally {
       setLoadingMessages(false);
     }
@@ -179,7 +179,7 @@ function MessengerPage() {
     socket.on("user_online", ({ userId }) => setOnlineIds((items) => (items.includes(userId) ? items : [...items, userId])));
     socket.on("user_offline", ({ userId }) => setOnlineIds((items) => items.filter((id) => id !== userId)));
     socket.on("online_users_list", ({ userIds }) => setOnlineIds(userIds || []));
-    socket.on("socket_error", (payload) => setError(payload.message || "Socket error"));
+    socket.on("socket_error", (payload) => setError(payload.message || "Lỗi kết nối thời gian thực"));
 
     return () => {
       socket.disconnect();
@@ -224,7 +224,7 @@ function MessengerPage() {
       setConversations((items) => bumpConversation(items, selectedId, message));
       setReplyTarget(null);
     } catch (err) {
-      setError(err.response?.data?.message || "Khong gui duoc message.");
+      setError(err.response?.data?.message || "Không thể gửi tin nhắn.");
     }
   }
 
@@ -241,7 +241,7 @@ function MessengerPage() {
         )
       );
     } catch (err) {
-      setError(err.response?.data?.message || "Khong xoa duoc message.");
+      setError(err.response?.data?.message || "Không thể xóa tin nhắn.");
     }
   }
 

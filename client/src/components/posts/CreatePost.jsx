@@ -164,7 +164,7 @@ function CreatePost({ user, onCreate, busy = false }) {
     setError("");
     if (!canSubmit) {
       setError(
-        "Cần có nội dung hoặc media để tạo post.",
+        "Cần có nội dung hoặc tệp đa phương tiện để tạo bài viết.",
       );
       return;
     }
@@ -175,7 +175,7 @@ function CreatePost({ user, onCreate, busy = false }) {
     setError("");
     if (!canSubmit) {
       setError(
-        "Cần có nội dung hoặc media để tạo post.",
+        "Cần có nội dung hoặc tệp đa phương tiện để tạo bài viết.",
       );
       setStep("compose");
       return;
@@ -188,7 +188,7 @@ function CreatePost({ user, onCreate, busy = false }) {
     } catch (err) {
       setError(
         err.response?.data?.message ||
-          "Không tạo được post.",
+          "Không thể tạo bài viết.",
       );
     }
   }
@@ -417,7 +417,7 @@ function CreatePost({ user, onCreate, busy = false }) {
                       <EmojiEmotionsRoundedIcon />
                     </IconButton>
                   </Tooltip>
-                  <Tooltip title="Check in">
+                  <Tooltip title="Đánh dấu địa điểm">
                     <IconButton className="!text-[#f3425f]">
                       <LocationOnRoundedIcon />
                     </IconButton>

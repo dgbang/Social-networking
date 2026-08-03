@@ -8,9 +8,9 @@ const asyncHandler = require("../utils/asyncHandler");
 
 const router = express.Router();
 
-const storyIdParam = param("id").isUUID().withMessage("Valid story id is required");
-const textRule = body("text").optional({ nullable: true }).trim().isLength({ max: 160 }).withMessage("Story text is too long");
-const limitRule = query("limit").optional().isInt({ min: 1, max: 50 }).withMessage("Limit must be from 1 to 50");
+const storyIdParam = param("id").isUUID().withMessage("ID tin hợp lệ là bắt buộc");
+const textRule = body("text").optional({ nullable: true }).trim().isLength({ max: 160 }).withMessage("Nội dung tin không được vượt quá 160 ký tự");
+const limitRule = query("limit").optional().isInt({ min: 1, max: 50 }).withMessage("Giới hạn phải từ 1 đến 50");
 
 router.use(requireAuth);
 

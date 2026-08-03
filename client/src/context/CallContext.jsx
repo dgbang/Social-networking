@@ -59,7 +59,7 @@ export function CallProvider({ children }) {
 export function useCall() {
   const context = useContext(CallContext);
   if (!context) {
-    throw new Error("useCall must be used inside CallProvider");
+    throw new Error("useCall phải được sử dụng bên trong CallProvider");
   }
   return context;
 }

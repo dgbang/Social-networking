@@ -1,10 +1,10 @@
 export async function cropImageFile(file, aspectRatio, outputName) {
   if (!file) return null;
   if (!file.type.startsWith("image/")) {
-    throw new Error("Only image files are allowed.");
+    throw new Error("Chỉ chấp nhận tệp hình ảnh.");
   }
   if (file.size > 5 * 1024 * 1024) {
-    throw new Error("Image must be 5MB or smaller.");
+    throw new Error("Hình ảnh phải có dung lượng không quá 5 MB.");
   }
 
   const image = await loadImage(file);
@@ -43,7 +43,7 @@ function loadImage(file) {
     };
     image.onerror = () => {
       URL.revokeObjectURL(url);
-      reject(new Error("Cannot read image."));
+      reject(new Error("Không thể đọc tệp hình ảnh."));
     };
     image.src = url;
   });

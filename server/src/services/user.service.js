@@ -39,7 +39,7 @@ async function updateMe(user, payload) {
 async function getById(id, viewerId) {
   const user = await User.findByPk(id);
   if (!user) {
-    throw createError(404, "USER_NOT_FOUND", "User not found");
+    throw createError(404, "USER_NOT_FOUND", "Không tìm thấy người dùng");
   }
   return serializeProfile(user, viewerId);
 }
@@ -63,7 +63,7 @@ async function searchUsers({ q, limit = 10 }) {
 
 async function uploadProfileImage(user, file, type) {
   if (!file) {
-    throw createError(400, "UPLOAD_FILE_REQUIRED", "Image file is required");
+    throw createError(400, "UPLOAD_FILE_REQUIRED", "Tệp hình ảnh là bắt buộc");
   }
 
   const isAvatar = type === "avatar";
@@ -80,7 +80,7 @@ async function uploadProfileImage(user, file, type) {
   if (oldPublicId) {
     uploadService.deleteByPublicId(oldPublicId).catch((error) => {
       if (process.env.NODE_ENV !== "test") {
-        console.error("Failed to delete old Cloudinary image", {
+        console.error("Không thể xóa hình ảnh cũ trên Cloudinary", {
           publicId: oldPublicId,
           message: error.message
         });

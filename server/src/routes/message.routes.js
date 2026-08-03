@@ -9,6 +9,6 @@ const router = express.Router();
 
 router.use(requireAuth);
 
-router.delete("/:id", [param("id").isUUID().withMessage("Valid message id is required")], validate, asyncHandler(messageController.remove));
+router.delete("/:id", [param("id").isUUID().withMessage("ID tin nhắn hợp lệ là bắt buộc")], validate, asyncHandler(messageController.remove));
 
 module.exports = router;

@@ -20,7 +20,7 @@ function makeNotification(overrides = {}) {
     fromUserId: "user-b",
     type: "like",
     referenceId: "post-1",
-    content: "reacted like to your post",
+    content: "đã bày tỏ cảm xúc về bài viết của bạn",
     isRead: false,
     fromUser: {
       id: "user-b",
@@ -55,7 +55,7 @@ describe("notificationService", () => {
       fromUserId: "user-a",
       type: "like",
       referenceId: "post-1",
-      content: "reacted to your post"
+      content: "đã bày tỏ cảm xúc về bài viết của bạn"
     });
 
     expect(result).toBeNull();
@@ -71,7 +71,7 @@ describe("notificationService", () => {
       fromUserId: "user-b",
       type: "like",
       referenceId: "post-1",
-      content: "reacted like to your post"
+      content: "đã bày tỏ cảm xúc về bài viết của bạn"
     });
 
     expect(Notification.create).toHaveBeenCalledWith(

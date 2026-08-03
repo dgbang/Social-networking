@@ -21,7 +21,7 @@ describe("friendService.sendRequest", () => {
     User.findByPk.mockResolvedValue({ id: "target-user" });
   });
 
-  it("rejects self friend request", async () => {
+  it("từ chối lời mời kết bạn gửi cho chính mình", async () => {
     await expect(friendService.sendRequest("same-user", "same-user")).rejects.toMatchObject({
       status: 400,
       code: "FRIEND_REQUEST_SELF"
@@ -29,7 +29,7 @@ describe("friendService.sendRequest", () => {
     expect(Friendship.create).not.toHaveBeenCalled();
   });
 
-  it("does not create duplicate pending relationship", async () => {
+  it("không tạo trùng quan hệ đang chờ xử lý", async () => {
     Friendship.findOne.mockResolvedValue({ status: "pending" });
 
     await expect(friendService.sendRequest("user-a", "user-b")).rejects.toMatchObject({
@@ -39,7 +39,7 @@ describe("friendService.sendRequest", () => {
     expect(Friendship.create).not.toHaveBeenCalled();
   });
 
-  it("reopens a rejected relationship instead of creating a duplicate", async () => {
+  it("mở lại quan hệ đã bị từ chối thay vì tạo bản ghi trùng", async () => {
     const update = jest.fn();
     Friendship.findOne.mockResolvedValue({ status: "rejected", update });
 
@@ -54,12 +54,58 @@ describe("friendService.sendRequest", () => {
   });
 });
 
+describe("friendService.getRelationship", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    User.findByPk.mockResolvedValue({ id: "user-b" });
+  });
+
+  it("trả về trạng thái chưa kết bạn khi hai người chưa có quan hệ", async () => {
+    Friendship.findOne.mockResolvedValue(null);
+
+    await expect(friendService.getRelationship("user-a", "user-b")).resolves.toEqual({
+      status: "none",
+      direction: null
+    });
+  });
+
+  it("xác định đúng lời mời đang chờ do người hiện tại gửi", async () => {
+    Friendship.findOne.mockResolvedValue({
+      id: "friendship-ab",
+      requesterId: "user-a",
+      addresseeId: "user-b",
+      status: "pending"
+    });
+
+    await expect(friendService.getRelationship("user-a", "user-b")).resolves.toEqual({
+      id: "friendship-ab",
+      status: "pending",
+      direction: "outgoing"
+    });
+  });
+
+  it("xác định đúng lời mời đang chờ do người kia gửi", async () => {
+    Friendship.findOne.mockResolvedValue({
+      id: "friendship-ba",
+      requesterId: "user-b",
+      addresseeId: "user-a",
+      status: "pending"
+    });
+
+    await expect(friendService.getRelationship("user-a", "user-b")).resolves.toEqual({
+      id: "friendship-ba",
+      status: "pending",
+      direction: "incoming"
+    });
+  });
+});
+
 describe("friendService.acceptRequest", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it("accepts the request and creates or reuses a private conversation", async () => {
+  it("chấp nhận lời mời và tạo hoặc tái sử dụng cuộc trò chuyện riêng", async () => {
     const friendship = {
       update: jest.fn().mockResolvedValue(undefined)
     };

@@ -116,11 +116,11 @@ function Navbar() {
   }
 
   const navItems = [
-    { label: "Home", to: "/dashboard", icon: <DashboardRoundedIcon />, activePaths: ["/dashboard", "/post"] },
-    { label: "Friends", to: "/friends", icon: <PeopleAltRoundedIcon />, activePaths: ["/friends"] },
-    { label: "Messenger", to: "/messenger", icon: <ChatBubbleRoundedIcon />, activePaths: ["/messenger"] },
-    { label: "Groups", to: "/friends", icon: <GroupsRoundedIcon />, activePaths: [] },
-    { label: "Market", to: "/dashboard", icon: <StorefrontRoundedIcon />, activePaths: [] }
+    { key: "home", label: "Trang chủ", to: "/dashboard", icon: <DashboardRoundedIcon />, activePaths: ["/dashboard", "/post"] },
+    { key: "friends", label: "Bạn bè", to: "/friends", icon: <PeopleAltRoundedIcon />, activePaths: ["/friends"] },
+    { key: "messenger", label: "Tin nhắn", to: "/messenger", icon: <ChatBubbleRoundedIcon />, activePaths: ["/messenger"] },
+    { key: "groups", label: "Nhóm", to: "/friends", icon: <GroupsRoundedIcon />, activePaths: [] },
+    { key: "market", label: "Chợ", to: "/dashboard", icon: <StorefrontRoundedIcon />, activePaths: [] }
   ];
 
   function isActive(item) {
@@ -153,7 +153,7 @@ function Navbar() {
           to={user ? "/dashboard" : "/login"}
           variant="contained"
           className="!h-[42px] !min-w-[42px] !w-[42px] !rounded-full !bg-[#1877f2] !p-0 !font-black !tracking-normal !text-white"
-          aria-label="SocialConnect home"
+          aria-label="Trang chủ SocialConnect"
         >
           SC
         </Button>
@@ -168,9 +168,9 @@ function Navbar() {
               }
             }}
           >
-            <Tooltip title="Tim kiem">
+            <Tooltip title="Tìm kiếm">
               <IconButton
-                aria-label="Tim kiem"
+                aria-label="Tìm kiếm"
                 className="!h-11 !w-11 !rounded-full !border !border-[#ccd0d5] !bg-white !text-[#65676b] hover:!bg-[#f0f2f5]"
                 sx={{
                   display: "inline-flex",
@@ -186,7 +186,7 @@ function Navbar() {
               fullWidth
               size="small"
               type="search"
-              placeholder="Tim kiem"
+              placeholder="Tìm kiếm"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               onFocus={() => setSearchOpen(true)}
@@ -238,7 +238,7 @@ function Navbar() {
             {navItems.map((item) => {
               const active = isActive(item);
               return (
-                <Tooltip key={item.label} title={item.label}>
+                <Tooltip key={item.key} title={item.label}>
                   <IconButton
                     component={Link}
                     to={item.to}
@@ -248,7 +248,7 @@ function Navbar() {
                       active ? "!bg-[#e7f3ff] !text-[#1877f2] after:absolute after:bottom-[-7px] after:h-1 after:w-10 after:rounded-full after:bg-[#1877f2] after:content-['']" : "!text-[#65676b]"
                     }`}
                   >
-                    {item.label === "Messenger" ? (
+                    {item.key === "messenger" ? (
                       <Badge color="error" badgeContent={chatUnreadCount} max={99} invisible={chatUnreadCount <= 0}>
                         {item.icon}
                       </Badge>
@@ -279,17 +279,17 @@ function Navbar() {
                 {user.fullName}
               </Button>
               <NotificationBell />
-              <IconButton className="!bg-[#e4e6eb] !text-[#050505]" color="inherit" onClick={handleLogout} aria-label="Logout">
+              <IconButton className="!bg-[#e4e6eb] !text-[#050505]" color="inherit" onClick={handleLogout} aria-label="Đăng xuất">
                 <LogoutRoundedIcon />
               </IconButton>
             </>
           ) : (
             <>
               <Button component={Link} to="/login" color="inherit" startIcon={<AccountCircleRoundedIcon />}>
-                Login
+                Đăng nhập
               </Button>
               <Button component={Link} to="/register" color="inherit">
-                Register
+                Đăng ký
               </Button>
             </>
           )}

@@ -5,7 +5,7 @@ const { success } = require("../utils/response");
 async function me(req, res) {
   const user = await userService.getMe(req.user);
   return success(res, req, {
-    message: "Current user profile",
+    message: "Hồ sơ người dùng hiện tại",
     data: { user }
   });
 }
@@ -13,7 +13,7 @@ async function me(req, res) {
 async function updateMe(req, res) {
   const user = await userService.updateMe(req.user, req.body);
   return success(res, req, {
-    message: "Profile updated",
+    message: "Đã cập nhật hồ sơ",
     data: { user }
   });
 }
@@ -21,7 +21,7 @@ async function updateMe(req, res) {
 async function getById(req, res) {
   const user = await userService.getById(req.params.id, req.user.id);
   return success(res, req, {
-    message: "User profile",
+    message: "Hồ sơ người dùng",
     data: { user }
   });
 }
@@ -29,7 +29,7 @@ async function getById(req, res) {
 async function search(req, res) {
   const users = await userService.searchUsers(req.query);
   return success(res, req, {
-    message: "Users found",
+    message: "Đã tìm thấy người dùng",
     data: { users }
   });
 }
@@ -37,7 +37,7 @@ async function search(req, res) {
 async function uploadAvatar(req, res) {
   const user = await userService.uploadProfileImage(req.user, req.file, "avatar");
   return success(res, req, {
-    message: "Avatar uploaded",
+    message: "Đã tải ảnh đại diện lên",
     data: { user }
   });
 }
@@ -45,7 +45,7 @@ async function uploadAvatar(req, res) {
 async function uploadCover(req, res) {
   const user = await userService.uploadProfileImage(req.user, req.file, "cover");
   return success(res, req, {
-    message: "Cover photo uploaded",
+    message: "Đã tải ảnh bìa lên",
     data: { user }
   });
 }
@@ -53,7 +53,7 @@ async function uploadCover(req, res) {
 async function posts(req, res) {
   const result = await postService.listUserPosts(req.user.id, req.params.id, req.query);
   return success(res, req, {
-    message: "User posts",
+    message: "Bài viết của người dùng",
     data: { posts: result.posts },
     meta: {
       nextCursor: result.nextCursor,
@@ -65,7 +65,7 @@ async function posts(req, res) {
 async function onlineFriends(req, res) {
   const users = await userService.listOnlineFriends(req.user.id);
   return success(res, req, {
-    message: "Online friends",
+    message: "Bạn bè đang trực tuyến",
     data: { users }
   });
 }
@@ -73,7 +73,7 @@ async function onlineFriends(req, res) {
 async function saveFcmToken(req, res) {
   const result = await userService.saveFcmToken(req.user, req.body.token);
   return success(res, req, {
-    message: "FCM token saved",
+    message: "Đã lưu token FCM",
     data: result
   });
 }

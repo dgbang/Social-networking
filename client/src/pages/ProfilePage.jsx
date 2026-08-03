@@ -2,7 +2,12 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { createConversation } from "../api/chatApi.js";
-import { getFriends } from "../api/friendApi.js";
+import {
+  acceptFriendRequest,
+  getFriendRelationship,
+  rejectFriendRequest,
+  sendFriendRequest
+} from "../api/friendApi.js";
 import { getMyProfile, getUserProfile, updateMyProfile, uploadAvatar, uploadCover } from "../api/userApi.js";
 import { ProfilePageSkeleton } from "../components/Common/Skeletons.jsx";
 import EditProfileModal from "../components/profile/EditProfileModal.jsx";
@@ -21,7 +26,8 @@ function ProfilePage() {
   const [error, setError] = useState("");
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [friendIds, setFriendIds] = useState([]);
+  const [friendship, setFriendship] = useState(null);
+  const [friendshipBusy, setFriendshipBusy] = useState(false);
   const [messageBusy, setMessageBusy] = useState(false);
 
   const isOwner = !id || id === auth.user?.id;
@@ -30,13 +36,23 @@ function ProfilePage() {
     let active = true;
     setLoading(true);
     setError("");
-    const loader = isOwner ? getMyProfile : () => getUserProfile(id);
+    setProfile(null);
+    setFriendship(null);
+    const loader = isOwner
+      ? async () => ({ user: await getMyProfile(), friendship: { status: "self", direction: null } })
+      : async () => {
+          const [user, relationship] = await Promise.all([getUserProfile(id), getFriendRelationship(id)]);
+          return { user, friendship: relationship };
+        };
     loader()
-      .then((user) => {
-        if (active) setProfile(user);
+      .then((result) => {
+        if (active) {
+          setProfile(result.user);
+          setFriendship(result.friendship);
+        }
       })
       .catch((err) => {
-        if (active) setError(err.response?.data?.message || "Cannot load profile.");
+        if (active) setError(err.response?.data?.message || "Không thể tải trang cá nhân.");
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -45,24 +61,6 @@ function ProfilePage() {
       active = false;
     };
   }, [id, isOwner]);
-
-  useEffect(() => {
-    if (isOwner) {
-      setFriendIds([]);
-      return;
-    }
-    let active = true;
-    getFriends()
-      .then((friends) => {
-        if (active) setFriendIds(friends.map((friend) => friend.id));
-      })
-      .catch(() => {
-        if (active) setFriendIds([]);
-      });
-    return () => {
-      active = false;
-    };
-  }, [isOwner, id]);
 
   function syncAuthUser(user) {
     if (isOwner && auth.accessToken) {
@@ -79,7 +77,7 @@ function ProfilePage() {
       syncAuthUser(user);
       setEditing(false);
     } catch (err) {
-      setError(err.response?.data?.message || "Cannot update profile.");
+      setError(err.response?.data?.message || "Không thể cập nhật trang cá nhân.");
     } finally {
       setSaving(false);
     }
@@ -95,7 +93,7 @@ function ProfilePage() {
       setProfile(user);
       syncAuthUser(user);
     } catch (err) {
-      setError(err.response?.data?.message || err.message || "Cannot upload avatar.");
+      setError(err.response?.data?.message || err.message || "Không thể tải ảnh đại diện lên.");
     } finally {
       setSaving(false);
     }
@@ -111,7 +109,7 @@ function ProfilePage() {
       setProfile(user);
       syncAuthUser(user);
     } catch (err) {
-      setError(err.response?.data?.message || err.message || "Cannot upload cover.");
+      setError(err.response?.data?.message || err.message || "Không thể tải ảnh bìa lên.");
     } finally {
       setSaving(false);
     }
@@ -125,9 +123,51 @@ function ProfilePage() {
       const conversation = await createConversation({ type: "private", memberIds: [profile.id] });
       navigate(`/messenger?conversationId=${conversation.id}`);
     } catch (err) {
-      setError(err.response?.data?.message || "Khong mo duoc doan chat.");
+      setError(err.response?.data?.message || "Không thể mở cuộc trò chuyện.");
     } finally {
       setMessageBusy(false);
+    }
+  }
+
+  async function handleAddFriend() {
+    if (!profile?.id) return;
+    setFriendshipBusy(true);
+    setError("");
+    try {
+      const nextFriendship = await sendFriendRequest(profile.id);
+      setFriendship({ id: nextFriendship.id, status: "pending", direction: "outgoing" });
+    } catch (err) {
+      setError(err.response?.data?.message || "Không thể gửi lời mời kết bạn.");
+    } finally {
+      setFriendshipBusy(false);
+    }
+  }
+
+  async function handleAcceptFriend() {
+    if (!profile?.id) return;
+    setFriendshipBusy(true);
+    setError("");
+    try {
+      const result = await acceptFriendRequest(profile.id);
+      setFriendship({ id: result.friendship?.id, status: "accepted", direction: null });
+    } catch (err) {
+      setError(err.response?.data?.message || "Không thể chấp nhận lời mời kết bạn.");
+    } finally {
+      setFriendshipBusy(false);
+    }
+  }
+
+  async function handleRejectFriend() {
+    if (!profile?.id) return;
+    setFriendshipBusy(true);
+    setError("");
+    try {
+      await rejectFriendRequest(profile.id);
+      setFriendship({ status: "none", direction: null });
+    } catch (err) {
+      setError(err.response?.data?.message || "Không thể từ chối lời mời kết bạn.");
+    } finally {
+      setFriendshipBusy(false);
     }
   }
 
@@ -140,9 +180,14 @@ function ProfilePage() {
       <ProfileHeader
         user={profile}
         isOwner={isOwner}
-        canMessage={!isOwner && friendIds.includes(profile?.id)}
+        friendship={friendship}
+        friendshipBusy={friendshipBusy}
+        canMessage={!isOwner && friendship?.status === "accepted"}
         messageBusy={messageBusy}
         onEdit={() => setEditing(true)}
+        onAddFriend={handleAddFriend}
+        onAcceptFriend={handleAcceptFriend}
+        onRejectFriend={handleRejectFriend}
         onMessage={handleMessage}
       />
       {editing ? (

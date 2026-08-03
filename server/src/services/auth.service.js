@@ -19,7 +19,7 @@ function addHours(hours) {
 
 function requireGoogleConfig() {
   if (!env.google.clientId || !env.google.clientSecret) {
-    const error = new Error("Google login is not configured");
+    const error = new Error("Đăng nhập Google chưa được cấu hình");
     error.status = 503;
     error.code = "GOOGLE_AUTH_NOT_CONFIGURED";
     throw error;
@@ -57,7 +57,7 @@ async function exchangeGoogleCode(code) {
   });
 
   if (!res.ok) {
-    const error = new Error("Google token exchange failed");
+    const error = new Error("Trao đổi token Google thất bại");
     error.status = 401;
     error.code = "GOOGLE_TOKEN_EXCHANGE_FAILED";
     throw error;
@@ -74,7 +74,7 @@ async function fetchGoogleProfile(accessToken) {
   });
 
   if (!res.ok) {
-    const error = new Error("Google profile request failed");
+    const error = new Error("Yêu cầu hồ sơ Google thất bại");
     error.status = 401;
     error.code = "GOOGLE_PROFILE_FAILED";
     throw error;
@@ -109,7 +109,7 @@ async function createUniqueGoogleUsername(email) {
 async function findOrCreateGoogleUser(profile) {
   const email = profile.email?.toLowerCase().trim();
   if (!email || !profile.email_verified) {
-    const error = new Error("Google account email is not verified");
+    const error = new Error("Email của tài khoản Google chưa được xác minh");
     error.status = 403;
     error.code = "GOOGLE_EMAIL_NOT_VERIFIED";
     throw error;
@@ -138,7 +138,7 @@ async function loginWithGoogle({ code, state, expectedState }, req) {
   requireGoogleConfig();
 
   if (!code || !state || !expectedState || state !== expectedState) {
-    const error = new Error("Invalid Google login state");
+    const error = new Error("Trạng thái đăng nhập Google không hợp lệ");
     error.status = 400;
     error.code = "INVALID_GOOGLE_STATE";
     throw error;
@@ -176,7 +176,7 @@ async function register({ email, username, password, fullName }) {
   });
 
   if (existing) {
-    const error = new Error("Email or username already exists");
+    const error = new Error("Email hoặc tên người dùng đã tồn tại");
     error.status = 409;
     error.code = "USER_EXISTS";
     throw error;
@@ -197,7 +197,7 @@ async function register({ email, username, password, fullName }) {
 async function login({ email, password }, req) {
   const user = await User.findOne({ where: { email: email.toLowerCase().trim() } });
   if (!user) {
-    const error = new Error("Invalid email or password");
+    const error = new Error("Email hoặc mật khẩu không hợp lệ");
     error.status = 401;
     error.code = "INVALID_CREDENTIALS";
     throw error;
@@ -205,7 +205,7 @@ async function login({ email, password }, req) {
 
   const passwordOk = await comparePassword(password, user.password);
   if (!passwordOk) {
-    const error = new Error("Invalid email or password");
+    const error = new Error("Email hoặc mật khẩu không hợp lệ");
     error.status = 401;
     error.code = "INVALID_CREDENTIALS";
     throw error;
@@ -235,7 +235,7 @@ async function refresh(req) {
   const session = await sessionService.findSessionFromCookie(req);
 
   if (!refreshToken || !session || !session.refreshTokenHash) {
-    const error = new Error("Invalid refresh token");
+    const error = new Error("Refresh token không hợp lệ");
     error.status = 401;
     error.code = "INVALID_REFRESH_TOKEN";
     throw error;
@@ -243,14 +243,14 @@ async function refresh(req) {
 
   const payload = verifyRefreshToken(refreshToken);
   if (payload.sid !== session.sessionId || payload.sub !== session.userId) {
-    const error = new Error("Invalid refresh token");
+    const error = new Error("Refresh token không hợp lệ");
     error.status = 401;
     error.code = "INVALID_REFRESH_TOKEN";
     throw error;
   }
 
   if (hashToken(refreshToken) !== session.refreshTokenHash) {
-    const error = new Error("Invalid refresh token");
+    const error = new Error("Refresh token không hợp lệ");
     error.status = 401;
     error.code = "INVALID_REFRESH_TOKEN";
     throw error;
@@ -258,7 +258,7 @@ async function refresh(req) {
 
   const user = await User.findByPk(payload.sub);
   if (!user) {
-    const error = new Error("Invalid refresh token");
+    const error = new Error("Refresh token không hợp lệ");
     error.status = 401;
     error.code = "INVALID_REFRESH_TOKEN";
     throw error;
@@ -303,7 +303,7 @@ async function resetPassword(token, password) {
   });
 
   if (!user) {
-    const error = new Error("Invalid or expired reset token");
+    const error = new Error("Token đặt lại mật khẩu không hợp lệ hoặc đã hết hạn");
     error.status = 400;
     error.code = "INVALID_RESET_TOKEN";
     throw error;

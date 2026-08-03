@@ -10,7 +10,7 @@ function validate(req, res, next) {
   return fail(res, req, {
     status: 422,
     code: "VALIDATION_ERROR",
-    message: "Validation error",
+    message: "Dữ liệu không hợp lệ",
     details: result.array()
   });
 }

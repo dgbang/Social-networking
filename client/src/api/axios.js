@@ -10,6 +10,47 @@ const api = axios.create({
 let getAccessToken = () => null;
 let onRefreshCredentials = () => {};
 let onUnauthorized = () => {};
+let refreshRequest = null;
+
+const authRequestsWithoutRefresh = [
+  "/auth/login",
+  "/auth/register",
+  "/auth/refresh-token",
+  "/auth/logout",
+  "/auth/forgot-password",
+  "/auth/reset-password"
+];
+
+function skipsTokenRefresh(config) {
+  const url = config?.url || "";
+  return config?._skipTokenRefresh || authRequestsWithoutRefresh.some((path) => url.includes(path));
+}
+
+function setAuthorization(config, accessToken) {
+  config.headers = config.headers || {};
+  config.headers.Authorization = `Bearer ${accessToken}`;
+}
+
+function refreshAccessToken() {
+  if (!refreshRequest) {
+    refreshRequest = api
+      .post("/auth/refresh-token", undefined, { _skipTokenRefresh: true })
+      .then((response) => {
+        const credentials = response.data.data;
+        onRefreshCredentials(credentials);
+        return credentials.accessToken;
+      })
+      .catch((error) => {
+        onUnauthorized();
+        throw error;
+      })
+      .finally(() => {
+        refreshRequest = null;
+      });
+  }
+
+  return refreshRequest;
+}
 
 export function configureApiAuth(handlers) {
   getAccessToken = handlers.getAccessToken || getAccessToken;
@@ -29,15 +70,14 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const original = error.config;
-    if (error.response?.status === 401 && !original?._retry && !original?.url?.includes("/auth/refresh-token")) {
+    if (error.response?.status === 401 && getAccessToken() && !original?._retry && !skipsTokenRefresh(original)) {
       original._retry = true;
       try {
-        const res = await api.post("/auth/refresh-token");
-        onRefreshCredentials(res.data.data);
-        original.headers.Authorization = `Bearer ${res.data.data.accessToken}`;
+        const accessToken = await refreshAccessToken();
+        setAuthorization(original, accessToken);
         return api(original);
       } catch (refreshError) {
-        onUnauthorized();
+        return Promise.reject(refreshError);
       }
     }
     return Promise.reject(error);

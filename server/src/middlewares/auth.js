@@ -10,7 +10,7 @@ async function requireAuth(req, res, next) {
     return fail(res, req, {
       status: 401,
       code: "UNAUTHORIZED",
-      message: "Missing access token"
+      message: "Thiếu access token"
     });
   }
 
@@ -21,7 +21,7 @@ async function requireAuth(req, res, next) {
       return fail(res, req, {
         status: 401,
         code: "UNAUTHORIZED",
-        message: "Invalid access token"
+        message: "Access token không hợp lệ"
       });
     }
     req.user = user;
@@ -30,7 +30,7 @@ async function requireAuth(req, res, next) {
     return fail(res, req, {
       status: 401,
       code: "UNAUTHORIZED",
-      message: "Invalid or expired access token"
+      message: "Access token không hợp lệ hoặc đã hết hạn"
     });
   }
 }

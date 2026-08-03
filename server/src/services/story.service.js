@@ -100,15 +100,15 @@ async function uploadStoryFile(file) {
 
 async function createStory(userId, payload, files = []) {
   if (!files.length) {
-    throw createError(400, "STORY_MEDIA_REQUIRED", "Story media is required");
+    throw createError(400, "STORY_MEDIA_REQUIRED", "Tin cần có tệp đa phương tiện");
   }
   if (files.length > 1) {
-    throw createError(400, "STORY_SINGLE_MEDIA_ONLY", "Story can include one media file");
+    throw createError(400, "STORY_SINGLE_MEDIA_ONLY", "Mỗi tin chỉ được chứa một tệp đa phương tiện");
   }
 
   const text = normalizeText(payload.text);
   if (text && text.length > 160) {
-    throw createError(400, "STORY_TEXT_TOO_LONG", "Story text is too long");
+    throw createError(400, "STORY_TEXT_TOO_LONG", "Nội dung tin quá dài");
   }
 
   const uploaded = await uploadStoryFile(files[0]);
@@ -133,10 +133,10 @@ async function getStory(storyId, viewerId) {
     include: [authorInclude()]
   });
   if (!story) {
-    throw createError(404, "STORY_NOT_FOUND", "Story not found");
+    throw createError(404, "STORY_NOT_FOUND", "Không tìm thấy tin");
   }
   if (!(await canViewStory(story, viewerId))) {
-    throw createError(403, "STORY_FORBIDDEN", "You cannot view this story");
+    throw createError(403, "STORY_FORBIDDEN", "Bạn không thể xem tin này");
   }
   const view = await StoryView.findOne({ where: { storyId, userId: viewerId } });
   return serializeStory(story, viewerId, new Set(view ? [storyId] : []));
@@ -201,10 +201,10 @@ async function listFeed(userId, { limit } = {}) {
 async function markViewed(storyId, userId) {
   const story = await Story.findOne({ where: { id: storyId }, include: [authorInclude()] });
   if (!story) {
-    throw createError(404, "STORY_NOT_FOUND", "Story not found");
+    throw createError(404, "STORY_NOT_FOUND", "Không tìm thấy tin");
   }
   if (!(await canViewStory(story, userId))) {
-    throw createError(403, "STORY_FORBIDDEN", "You cannot view this story");
+    throw createError(403, "STORY_FORBIDDEN", "Bạn không thể xem tin này");
   }
 
   await StoryView.findOrCreate({
@@ -218,10 +218,10 @@ async function markViewed(storyId, userId) {
 async function deleteStory(storyId, userId) {
   const story = await Story.findOne({ where: { id: storyId, deletedAt: null } });
   if (!story) {
-    throw createError(404, "STORY_NOT_FOUND", "Story not found");
+    throw createError(404, "STORY_NOT_FOUND", "Không tìm thấy tin");
   }
   if (story.userId !== userId) {
-    throw createError(403, "STORY_DELETE_FORBIDDEN", "You cannot delete this story");
+    throw createError(403, "STORY_DELETE_FORBIDDEN", "Bạn không thể xóa tin này");
   }
 
   await story.update({ deletedAt: new Date() });

@@ -1,5 +1,7 @@
+import { CircularProgress } from "@mui/material";
+import { useEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Navbar from "./components/Common/Navbar.jsx";
 import { CallProvider } from "./context/CallContext.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
@@ -14,10 +16,27 @@ import PostDetailPage from "./pages/PostDetailPage.jsx";
 import MessengerPage from "./pages/MessengerPage.jsx";
 import NotificationsPage from "./pages/NotificationsPage.jsx";
 import ProtectedRoute from "./routes/ProtectedRoute.jsx";
+import { fetchCurrentUser } from "./store/authSlice.js";
 
 function App() {
+  const dispatch = useDispatch();
   const location = useLocation();
-  const accessToken = useSelector((state) => state.auth.accessToken);
+  const { accessToken, initialized } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (!initialized && accessToken) {
+      dispatch(fetchCurrentUser());
+    }
+  }, [accessToken, dispatch, initialized]);
+
+  if (!initialized) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-[#f0f2f5]">
+        <CircularProgress size={32} aria-label="Đang kiểm tra phiên đăng nhập" />
+      </div>
+    );
+  }
+
   const authPaths = ["/login", "/register", "/forgot-password", "/oauth/callback"];
   const isTokenAuthPath = location.pathname.startsWith("/reset-password/");
   const isAuthScreen = authPaths.includes(location.pathname) || isTokenAuthPath;

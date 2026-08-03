@@ -6,7 +6,7 @@ function startStoryExpiryJob() {
     try {
       await storyService.expireOldStories();
     } catch (error) {
-      console.error("Story expiry job failed", error);
+      console.error("Tác vụ xóa tin hết hạn thất bại", error);
     }
   });
 }

@@ -5,6 +5,7 @@ const authController = require("../controllers/auth.controller");
 const validate = require("../middlewares/validate");
 const requireAuth = require("../middlewares/auth");
 const asyncHandler = require("../utils/asyncHandler");
+const { fail } = require("../utils/response");
 
 const router = express.Router();
 
@@ -12,27 +13,39 @@ const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 100,
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
+  handler: (req, res) =>
+    fail(res, req, {
+      status: 429,
+      code: "RATE_LIMITED",
+      message: "Bạn đã gửi quá nhiều yêu cầu. Vui lòng thử lại sau."
+    })
 });
 
-const emailRule = body("email").isEmail().withMessage("Valid email is required");
-const passwordRule = body("password").isLength({ min: 8 }).withMessage("Password must be at least 8 characters");
-const tokenParamRule = param("token").isLength({ min: 16 }).withMessage("Token is required");
+const emailRule = body("email").isEmail().withMessage("Email hợp lệ là bắt buộc");
+const passwordRule = body("password").isLength({ min: 8 }).withMessage("Mật khẩu phải có ít nhất 8 ký tự");
+const tokenParamRule = param("token").isLength({ min: 16 }).withMessage("Token là bắt buộc");
 
 router.post(
   "/register",
   authLimiter,
   [
     emailRule,
-    body("username").trim().isLength({ min: 3 }).withMessage("Username must be at least 3 characters"),
+    body("username").trim().isLength({ min: 3 }).withMessage("Tên người dùng phải có ít nhất 3 ký tự"),
     passwordRule,
-    body("fullName").trim().notEmpty().withMessage("Full name is required")
+    body("fullName").trim().notEmpty().withMessage("Họ và tên là bắt buộc")
   ],
   validate,
   asyncHandler(authController.register)
 );
 
-router.post("/login", authLimiter, [emailRule, body("password").notEmpty()], validate, asyncHandler(authController.login));
+router.post(
+  "/login",
+  authLimiter,
+  [emailRule, body("password").notEmpty().withMessage("Mật khẩu là bắt buộc")],
+  validate,
+  asyncHandler(authController.login)
+);
 router.get("/google", authLimiter, asyncHandler(authController.googleStart));
 router.get("/google/callback", authLimiter, asyncHandler(authController.googleCallback));
 router.post("/refresh-token", authLimiter, asyncHandler(authController.refresh));

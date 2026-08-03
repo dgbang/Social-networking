@@ -4,7 +4,7 @@ const { success } = require("../utils/response");
 async function list(req, res) {
   const result = await notificationService.listNotifications(req.user.id, req.query);
   return success(res, req, {
-    message: "Notifications",
+    message: "Danh sách thông báo",
     data: {
       notifications: result.notifications,
       unreadCount: result.unreadCount
@@ -19,7 +19,7 @@ async function list(req, res) {
 async function read(req, res) {
   const result = await notificationService.markRead(req.user.id, req.params.id);
   return success(res, req, {
-    message: "Notification marked as read",
+    message: "Đã đánh dấu thông báo là đã đọc",
     data: result
   });
 }
@@ -27,7 +27,7 @@ async function read(req, res) {
 async function readAll(req, res) {
   const result = await notificationService.markAllRead(req.user.id);
   return success(res, req, {
-    message: "Notifications marked as read",
+    message: "Đã đánh dấu tất cả thông báo là đã đọc",
     data: result
   });
 }

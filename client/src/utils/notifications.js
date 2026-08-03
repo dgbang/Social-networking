@@ -15,17 +15,19 @@ export function notificationTarget(notification) {
   return null;
 }
 
+const relativeTimeFormatter = new Intl.RelativeTimeFormat("vi", { numeric: "auto" });
+
 export function formatNotificationTime(value) {
   if (!value) return "";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "";
   const diffSeconds = Math.max(0, Math.floor((Date.now() - date.getTime()) / 1000));
-  if (diffSeconds < 60) return "Just now";
+  if (diffSeconds < 60) return "Vừa xong";
   const diffMinutes = Math.floor(diffSeconds / 60);
-  if (diffMinutes < 60) return `${diffMinutes}m`;
+  if (diffMinutes < 60) return relativeTimeFormatter.format(-diffMinutes, "minute");
   const diffHours = Math.floor(diffMinutes / 60);
-  if (diffHours < 24) return `${diffHours}h`;
+  if (diffHours < 24) return relativeTimeFormatter.format(-diffHours, "hour");
   const diffDays = Math.floor(diffHours / 24);
-  if (diffDays < 7) return `${diffDays}d`;
-  return date.toLocaleDateString();
+  if (diffDays < 7) return relativeTimeFormatter.format(-diffDays, "day");
+  return date.toLocaleDateString("vi-VN");
 }

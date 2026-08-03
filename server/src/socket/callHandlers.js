@@ -6,7 +6,7 @@ const CALL_TIMEOUT_MS = 30000;
 function emitCallError(socket, error) {
   socket.emit("call_error", {
     code: error.code || "CALL_ERROR",
-    message: error.message || "Call error"
+    message: error.message || "Lỗi cuộc gọi"
   });
 }
 

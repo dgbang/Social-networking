@@ -6,7 +6,20 @@ const ICE_CONFIG = {
 };
 
 function callErrorMessage(error) {
-  return error?.message || "Khong thuc hien duoc cuoc goi.";
+  const browserMessages = {
+    AbortError: "Quá trình truy cập camera hoặc micrô đã bị gián đoạn.",
+    InvalidStateError: "Trạng thái cuộc gọi không hợp lệ.",
+    NotAllowedError: "Bạn chưa cấp quyền sử dụng camera hoặc micrô.",
+    NotFoundError: "Không tìm thấy camera hoặc micrô.",
+    NotReadableError: "Không thể truy cập camera hoặc micrô. Thiết bị có thể đang được ứng dụng khác sử dụng.",
+    NotSupportedError: "Thiết bị hoặc trình duyệt không hỗ trợ cuộc gọi.",
+    OperationError: "Không thể thiết lập kết nối cuộc gọi.",
+    OverconstrainedError: "Camera hoặc micrô không đáp ứng yêu cầu của cuộc gọi.",
+    SecurityError: "Trình duyệt đã chặn quyền sử dụng camera hoặc micrô."
+  };
+  if (browserMessages[error?.name]) return browserMessages[error.name];
+  if (error?.name && error.name !== "Error") return "Không thể thực hiện cuộc gọi.";
+  return error?.message || "Không thể thực hiện cuộc gọi.";
 }
 
 export function useCallManager({ socket, currentUser }) {
@@ -55,7 +68,7 @@ export function useCallManager({ socket, currentUser }) {
   const ensureLocalStream = useCallback(async () => {
     if (localStreamRef.current) return localStreamRef.current;
     if (!navigator.mediaDevices?.getUserMedia) {
-      throw new Error("Trinh duyet khong ho tro camera/microphone.");
+      throw new Error("Trình duyệt không hỗ trợ camera hoặc micrô.");
     }
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
     localStreamRef.current = stream;
@@ -107,7 +120,7 @@ export function useCallManager({ socket, currentUser }) {
   const startCall = useCallback(
     async ({ receiverId, conversationId }) => {
       if (!socket?.connected) {
-        setError("Socket chua ket noi.");
+        setError("Socket chưa kết nối.");
         return;
       }
       setError("");
@@ -218,13 +231,13 @@ export function useCallManager({ socket, currentUser }) {
 
     function handleRejected({ reason }) {
       resetCallState();
-      setError(reason === "timeout" ? "Cuoc goi da het thoi gian cho." : "Cuoc goi bi tu choi.");
+      setError(reason === "timeout" ? "Cuộc gọi đã hết thời gian chờ." : "Cuộc gọi bị từ chối.");
     }
 
     function handleEnded({ reason }) {
       resetCallState();
       if (reason === "disconnected") {
-        setError("Nguoi kia da mat ket noi.");
+        setError("Người kia đã mất kết nối.");
       }
     }
 
@@ -263,7 +276,7 @@ export function useCallManager({ socket, currentUser }) {
         }
         await peerRef.current.addIceCandidate(new RTCIceCandidate(candidate));
       } catch {
-        // Late ICE candidates can fail after a peer disconnects; ignore safely.
+        // ICE candidate đến muộn có thể lỗi sau khi kết nối ngang hàng bị ngắt.
       }
     }
 
@@ -274,7 +287,7 @@ export function useCallManager({ socket, currentUser }) {
     }
 
     function handleError(payload) {
-      setError(payload?.message || "Call error");
+      setError(payload?.message || "Lỗi cuộc gọi");
     }
 
     socket.on("incoming_call", handleIncoming);

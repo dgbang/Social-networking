@@ -16,7 +16,7 @@ async function start() {
     });
     startStoryExpiryJob();
   } catch (error) {
-    console.error("Failed to start server", error);
+    console.error("Không thể khởi động máy chủ", error);
     process.exit(1);
   }
 }

@@ -79,7 +79,7 @@ const notificationSlice = createSlice({
       })
       .addCase(fetchNotifications.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error?.message || "Khong tai duoc notifications.";
+        state.error = action.error?.message || "Không thể tải thông báo.";
       })
       .addCase(readNotification.fulfilled, (state, action) => {
         const updated = action.payload.notification;

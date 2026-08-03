@@ -5,13 +5,15 @@ import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import { Avatar, Box, Button, IconButton, Stack, Typography } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 
+const relativeTimeFormatter = new Intl.RelativeTimeFormat("vi", { numeric: "auto" });
+
 function timeAgo(value) {
   const diff = Date.now() - new Date(value).getTime();
   const minutes = Math.max(1, Math.floor(diff / 60000));
-  if (minutes < 60) return `${minutes}m`;
+  if (minutes < 60) return relativeTimeFormatter.format(-minutes, "minute");
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h`;
-  return `${Math.floor(hours / 24)}d`;
+  if (hours < 24) return relativeTimeFormatter.format(-hours, "hour");
+  return relativeTimeFormatter.format(-Math.floor(hours / 24), "day");
 }
 
 function StoryViewer({ group, initialIndex = 0, currentUser, onClose, onViewed, onDelete }) {
@@ -99,17 +101,17 @@ function StoryViewer({ group, initialIndex = 0, currentUser, onClose, onViewed, 
           <Stack direction="row" alignItems="center" spacing={1.2} className="min-w-0">
             <Avatar src={group.user?.avatar || undefined}>{group.user?.fullName?.charAt(0).toUpperCase() || "U"}</Avatar>
             <Box className="min-w-0">
-              <Typography variant="subtitle2" noWrap>{group.user?.fullName || group.user?.username || "User"}</Typography>
+              <Typography variant="subtitle2" noWrap>{group.user?.fullName || group.user?.username || "Người dùng"}</Typography>
               <Typography variant="caption">{timeAgo(story.createdAt)}</Typography>
             </Box>
           </Stack>
           <Stack direction="row" spacing={0.5}>
             {isOwner ? (
-              <IconButton color="inherit" onClick={() => onDelete(story.id)}>
+            <IconButton color="inherit" onClick={() => onDelete(story.id)} aria-label="Xóa tin">
                 <DeleteOutlineRoundedIcon />
               </IconButton>
             ) : null}
-            <IconButton color="inherit" onClick={onClose}>
+            <IconButton color="inherit" onClick={onClose} aria-label="Đóng">
               <CloseRoundedIcon />
             </IconButton>
           </Stack>
@@ -119,7 +121,7 @@ function StoryViewer({ group, initialIndex = 0, currentUser, onClose, onViewed, 
           {story.mediaType === "video" ? (
             <video src={story.media} controls autoPlay muted={false} />
           ) : (
-            <img src={story.media} alt={story.text || "Story"} />
+            <img src={story.media} alt={story.text || "Tin"} />
           )}
           {story.text ? (
             <Typography className="absolute bottom-[76px] left-5 right-5 rounded-lg bg-black/45 p-3 text-center !text-xl !font-extrabold !text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.45)]">
@@ -128,16 +130,16 @@ function StoryViewer({ group, initialIndex = 0, currentUser, onClose, onViewed, 
           ) : null}
         </Box>
 
-        <IconButton className="!absolute !left-3 !top-1/2 !z-[2] !-translate-y-1/2 !bg-white/18 !text-white backdrop-blur hover:!bg-white/28" onClick={goPrev}>
+        <IconButton className="!absolute !left-3 !top-1/2 !z-[2] !-translate-y-1/2 !bg-white/18 !text-white backdrop-blur hover:!bg-white/28" onClick={goPrev} aria-label="Tin trước">
           <ChevronLeftRoundedIcon />
         </IconButton>
-        <IconButton className="!absolute !right-3 !top-1/2 !z-[2] !-translate-y-1/2 !bg-white/18 !text-white backdrop-blur hover:!bg-white/28" onClick={goNext}>
+        <IconButton className="!absolute !right-3 !top-1/2 !z-[2] !-translate-y-1/2 !bg-white/18 !text-white backdrop-blur hover:!bg-white/28" onClick={goNext} aria-label="Tin tiếp theo">
           <ChevronRightRoundedIcon />
         </IconButton>
 
         {isOwner && story.viewsCount !== undefined ? (
           <Button className="!absolute !bottom-4 !left-1/2 !z-[2] !-translate-x-1/2 !rounded-full !bg-white/18 !text-white backdrop-blur" size="small" variant="contained">
-            {story.viewsCount} views
+            {story.viewsCount} lượt xem
           </Button>
         ) : null}
       </Box>

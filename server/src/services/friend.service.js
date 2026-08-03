@@ -14,7 +14,7 @@ function createError(status, code, message) {
 async function ensureUserExists(userId) {
   const user = await User.findByPk(userId);
   if (!user) {
-    throw createError(404, "USER_NOT_FOUND", "User not found");
+    throw createError(404, "USER_NOT_FOUND", "Không tìm thấy người dùng");
   }
   return user;
 }
@@ -32,13 +32,40 @@ async function findPair(userA, userB) {
   return Friendship.findOne({ where: pairWhere(userA, userB) });
 }
 
+function serializeRelationship(friendship, currentUserId) {
+  if (!friendship || friendship.status === "rejected") {
+    return { status: "none", direction: null };
+  }
+
+  return {
+    id: friendship.id,
+    status: friendship.status,
+    direction:
+      friendship.status === "pending"
+        ? friendship.requesterId === currentUserId
+          ? "outgoing"
+          : "incoming"
+        : null
+  };
+}
+
 function notifyFriendEvent(payload) {
   notificationService.createNotification(payload).catch(() => {});
 }
 
+async function getRelationship(currentUserId, targetUserId) {
+  if (currentUserId === targetUserId) {
+    return { status: "self", direction: null };
+  }
+
+  await ensureUserExists(targetUserId);
+  const friendship = await findPair(currentUserId, targetUserId);
+  return serializeRelationship(friendship, currentUserId);
+}
+
 async function sendRequest(currentUserId, targetUserId) {
   if (currentUserId === targetUserId) {
-    throw createError(400, "FRIEND_REQUEST_SELF", "Cannot send friend request to yourself");
+    throw createError(400, "FRIEND_REQUEST_SELF", "Bạn không thể gửi lời mời kết bạn cho chính mình");
   }
 
   await ensureUserExists(targetUserId);
@@ -55,17 +82,17 @@ async function sendRequest(currentUserId, targetUserId) {
       fromUserId: currentUserId,
       type: "friend_request",
       referenceId: currentUserId,
-      content: "sent you a friend request"
+      content: "đã gửi cho bạn lời mời kết bạn"
     });
     return existing;
   }
 
   if (existing?.status === "accepted") {
-    throw createError(409, "ALREADY_FRIENDS", "Users are already friends");
+    throw createError(409, "ALREADY_FRIENDS", "Hai người đã là bạn bè");
   }
 
   if (existing) {
-    throw createError(409, "FRIEND_REQUEST_EXISTS", "Friend request already exists");
+    throw createError(409, "FRIEND_REQUEST_EXISTS", "Lời mời kết bạn đã tồn tại");
   }
 
   const friendship = await Friendship.create({
@@ -78,7 +105,7 @@ async function sendRequest(currentUserId, targetUserId) {
     fromUserId: currentUserId,
     type: "friend_request",
     referenceId: currentUserId,
-    content: "sent you a friend request"
+    content: "đã gửi cho bạn lời mời kết bạn"
   });
   return friendship;
 }
@@ -93,7 +120,7 @@ async function acceptRequest(currentUserId, requesterId) {
   });
 
   if (!friendship) {
-    throw createError(404, "FRIEND_REQUEST_NOT_FOUND", "Friend request not found");
+    throw createError(404, "FRIEND_REQUEST_NOT_FOUND", "Không tìm thấy lời mời kết bạn");
   }
 
   await friendship.update({ status: "accepted" });
@@ -106,7 +133,7 @@ async function acceptRequest(currentUserId, requesterId) {
     fromUserId: currentUserId,
     type: "friend_accept",
     referenceId: currentUserId,
-    content: "accepted your friend request"
+    content: "đã chấp nhận lời mời kết bạn của bạn"
   });
   return { friendship, conversation };
 }
@@ -121,7 +148,7 @@ async function rejectRequest(currentUserId, requesterId) {
   });
 
   if (!friendship) {
-    throw createError(404, "FRIEND_REQUEST_NOT_FOUND", "Friend request not found");
+    throw createError(404, "FRIEND_REQUEST_NOT_FOUND", "Không tìm thấy lời mời kết bạn");
   }
 
   await friendship.update({ status: "rejected" });
@@ -137,7 +164,7 @@ async function unfriend(currentUserId, userId) {
   });
 
   if (!friendship) {
-    throw createError(404, "FRIENDSHIP_NOT_FOUND", "Friendship not found");
+    throw createError(404, "FRIENDSHIP_NOT_FOUND", "Không tìm thấy quan hệ bạn bè");
   }
 
   await friendship.destroy();
@@ -203,6 +230,7 @@ async function listSuggestions(currentUserId, limit = 20) {
 }
 
 module.exports = {
+  getRelationship,
   sendRequest,
   acceptRequest,
   rejectRequest,

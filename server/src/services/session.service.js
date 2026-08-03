@@ -2,7 +2,7 @@ const { AuthSession } = require("../models");
 const { randomToken } = require("../utils/tokens");
 
 function getBrowserName(req) {
-  return (req.headers["user-agent"] || "Unknown browser").slice(0, 255);
+  return (req.headers["user-agent"] || "Trình duyệt không xác định").slice(0, 255);
 }
 
 async function findSessionFromCookie(req) {

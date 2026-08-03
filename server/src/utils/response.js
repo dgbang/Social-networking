@@ -5,7 +5,7 @@ function meta(req) {
   };
 }
 
-function success(res, req, { message = "OK", data = null, status = 200, meta: extraMeta = {} } = {}) {
+function success(res, req, { message = "Thành công", data = null, status = 200, meta: extraMeta = {} } = {}) {
   return res.status(status).json({
     success: true,
     message,
@@ -17,7 +17,7 @@ function success(res, req, { message = "OK", data = null, status = 200, meta: ex
   });
 }
 
-function fail(res, req, { message = "Error", code = "ERROR", details = [], status = 400 } = {}) {
+function fail(res, req, { message = "Lỗi", code = "ERROR", details = [], status = 400 } = {}) {
   return res.status(status).json({
     success: false,
     message,

@@ -8,12 +8,12 @@ const asyncHandler = require("../utils/asyncHandler");
 
 const router = express.Router();
 
-const postIdParam = param("id").isUUID().withMessage("Valid post id is required");
-const limitRule = query("limit").optional().isInt({ min: 1, max: 50 }).withMessage("Limit must be from 1 to 50");
-const cursorRule = query("cursor").optional().isISO8601().withMessage("Cursor must be a valid datetime");
-const privacyRule = body("privacy").optional().isIn(["public", "friends", "private"]).withMessage("Invalid privacy");
-const contentRule = body("content").optional({ nullable: true }).trim().isLength({ max: 5000 }).withMessage("Content is too long");
-const reactionRule = body("type").optional().isIn(["like", "love", "haha", "wow", "sad", "angry"]).withMessage("Invalid reaction type");
+const postIdParam = param("id").isUUID().withMessage("ID bài viết hợp lệ là bắt buộc");
+const limitRule = query("limit").optional().isInt({ min: 1, max: 50 }).withMessage("Giới hạn phải từ 1 đến 50");
+const cursorRule = query("cursor").optional().isISO8601().withMessage("Con trỏ phải là thời gian hợp lệ");
+const privacyRule = body("privacy").optional().isIn(["public", "friends", "private"]).withMessage("Quyền riêng tư không hợp lệ");
+const contentRule = body("content").optional({ nullable: true }).trim().isLength({ max: 5000 }).withMessage("Nội dung không được vượt quá 5.000 ký tự");
+const reactionRule = body("type").optional().isIn(["like", "love", "haha", "wow", "sad", "angry"]).withMessage("Loại cảm xúc không hợp lệ");
 
 router.use(requireAuth);
 
@@ -30,7 +30,7 @@ router.get(
     postIdParam,
     limitRule,
     cursorRule,
-    query("parentId").optional().isUUID().withMessage("Valid parent comment id is required")
+    query("parentId").optional().isUUID().withMessage("ID bình luận cha hợp lệ là bắt buộc")
   ],
   validate,
   asyncHandler(postController.listComments)
@@ -39,8 +39,8 @@ router.post(
   "/:id/comments",
   [
     postIdParam,
-    body("content").trim().isLength({ min: 1, max: 2000 }).withMessage("Comment content is required"),
-    body("parentId").optional({ nullable: true }).isUUID().withMessage("Valid parent comment id is required")
+    body("content").trim().isLength({ min: 1, max: 2000 }).withMessage("Nội dung bình luận phải có từ 1 đến 2.000 ký tự"),
+    body("parentId").optional({ nullable: true }).isUUID().withMessage("ID bình luận cha hợp lệ là bắt buộc")
   ],
   validate,
   asyncHandler(postController.createComment)

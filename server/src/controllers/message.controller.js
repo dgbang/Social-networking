@@ -14,7 +14,7 @@ async function remove(req, res) {
     });
   }
   return success(res, req, {
-    message: "Message deleted",
+    message: "Đã xóa tin nhắn",
     data: { message }
   });
 }

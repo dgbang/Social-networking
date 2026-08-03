@@ -44,7 +44,7 @@ function serializeComment(comment) {
 async function listComments(postId, viewerId, { cursor, limit, parentId } = {}) {
   await postService.getPost(postId, viewerId);
   if (cursor && Number.isNaN(new Date(cursor).getTime())) {
-    throw createError(400, "INVALID_CURSOR", "Invalid cursor");
+    throw createError(400, "INVALID_CURSOR", "Con trỏ không hợp lệ");
   }
 
   const normalizedLimit = normalizeLimit(limit);
@@ -75,7 +75,7 @@ async function listComments(postId, viewerId, { cursor, limit, parentId } = {}) 
 async function createComment(postId, userId, payload) {
   const content = normalizeContent(payload.content);
   if (!content) {
-    throw createError(400, "COMMENT_VALIDATION_ERROR", "Comment content is required");
+    throw createError(400, "COMMENT_VALIDATION_ERROR", "Nội dung bình luận là bắt buộc");
   }
 
   const post = await postService.getPost(postId, userId);
@@ -86,7 +86,7 @@ async function createComment(postId, userId, payload) {
       where: { id: parentId, postId, isDeleted: false }
     });
     if (!parent) {
-      throw createError(400, "COMMENT_PARENT_INVALID", "Parent comment is invalid");
+      throw createError(400, "COMMENT_PARENT_INVALID", "Bình luận cha không hợp lệ");
     }
   }
 
@@ -110,7 +110,7 @@ async function createComment(postId, userId, payload) {
       fromUserId: userId,
       type: "comment",
       referenceId: postId,
-      content: "commented on your post"
+      content: "đã bình luận về bài viết của bạn"
     })
     .catch(() => {});
 
@@ -124,11 +124,11 @@ async function deleteComment(commentId, userId) {
   });
 
   if (!comment) {
-    throw createError(404, "COMMENT_NOT_FOUND", "Comment not found");
+    throw createError(404, "COMMENT_NOT_FOUND", "Không tìm thấy bình luận");
   }
 
   if (comment.userId !== userId) {
-    throw createError(403, "COMMENT_FORBIDDEN", "You cannot delete this comment");
+    throw createError(403, "COMMENT_FORBIDDEN", "Bạn không thể xóa bình luận này");
   }
 
   await sequelize.transaction(async (transaction) => {

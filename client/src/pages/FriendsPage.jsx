@@ -11,7 +11,11 @@ import {
 import { UserCardSkeleton } from "../components/Common/Skeletons.jsx";
 import UserCard from "../components/friends/UserCard.jsx";
 
-const tabs = ["friends", "requests", "suggestions"];
+const tabs = [
+  { value: "friends", label: "Bạn bè" },
+  { value: "requests", label: "Lời mời" },
+  { value: "suggestions", label: "Gợi ý" },
+];
 
 function FriendsPage() {
   const [activeTab, setActiveTab] = useState("friends");
@@ -30,7 +34,7 @@ function FriendsPage() {
       if (tab === "suggestions") nextItems = await getFriendSuggestions();
       setItems(nextItems);
     } catch (err) {
-      setError(err.response?.data?.message || "Cannot load friends.");
+      setError(err.response?.data?.message || "Không thể tải danh sách bạn bè.");
       setItems([]);
     } finally {
       setLoading(false);
@@ -48,7 +52,7 @@ function FriendsPage() {
       await action(userId);
       await load(activeTab);
     } catch (err) {
-      setError(err.response?.data?.message || "Action failed.");
+      setError(err.response?.data?.message || "Không thể thực hiện thao tác.");
     } finally {
       setBusyId("");
     }
@@ -62,24 +66,24 @@ function FriendsPage() {
   return (
     <section className="grid gap-4 pt-4">
       <div className="flex items-center justify-between gap-3">
-        <h1>Friends</h1>
+        <h1>Bạn bè</h1>
         <div className="flex flex-wrap gap-2">
           {tabs.map((tab) => (
             <button
               className={`rounded-lg border px-3 py-2 font-bold capitalize shadow-none ${
-                activeTab === tab ? "border-[#176fd1] bg-[#176fd1] text-white" : "border-[#c8d7e6] bg-white text-[#405069]"
+                activeTab === tab.value ? "border-[#176fd1] bg-[#176fd1] text-white" : "border-[#c8d7e6] bg-white text-[#405069]"
               }`}
               type="button"
-              key={tab}
-              onClick={() => setActiveTab(tab)}
+              key={tab.value}
+              onClick={() => setActiveTab(tab.value)}
             >
-              {tab}
+              {tab.label}
             </button>
           ))}
         </div>
       </div>
       {error ? <p className="my-3.5 rounded-md bg-[#ffe9eb] p-3 text-sm text-[#9f1b2a]">{error}</p> : null}
-      {!loading && visibleItems.length === 0 ? <p className="rounded-lg border border-[#c8d7e6] bg-white/95 p-4 shadow-[0_14px_34px_rgba(43,101,151,0.12)]">Nothing here yet.</p> : null}
+      {!loading && visibleItems.length === 0 ? <p className="rounded-lg border border-[#c8d7e6] bg-white/95 p-4 shadow-[0_14px_34px_rgba(43,101,151,0.12)]">Chưa có nội dung nào.</p> : null}
       <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-3">
         {loading ? <UserCardSkeleton /> : null}
         {visibleItems.map((item) => {
@@ -89,8 +93,8 @@ function FriendsPage() {
               <UserCard
                 key={item.id}
                 user={user}
-                actionLabel="Accept"
-                secondaryLabel="Reject"
+                actionLabel="Chấp nhận"
+                secondaryLabel="Từ chối"
                 onAction={() => runAction(user.id, acceptFriendRequest)}
                 onSecondaryAction={() => runAction(user.id, rejectFriendRequest)}
                 disabled={busyId === user.id}
@@ -102,7 +106,7 @@ function FriendsPage() {
               <UserCard
                 key={user.id}
                 user={user}
-                actionLabel="Add"
+                actionLabel="Kết bạn"
                 onAction={() => runAction(user.id, sendFriendRequest)}
                 disabled={busyId === user.id}
               />
@@ -112,7 +116,7 @@ function FriendsPage() {
             <UserCard
               key={user.id}
               user={user}
-              actionLabel="Unfriend"
+              actionLabel="Hủy kết bạn"
               onAction={() => runAction(user.id, unfriend)}
               disabled={busyId === user.id}
             />

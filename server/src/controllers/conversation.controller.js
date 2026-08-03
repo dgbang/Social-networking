@@ -6,7 +6,7 @@ const { success } = require("../utils/response");
 async function list(req, res) {
   const conversations = await chatService.listConversations(req.user.id, req.query);
   return success(res, req, {
-    message: "Conversations",
+    message: "Danh sách cuộc trò chuyện",
     data: { conversations }
   });
 }
@@ -14,7 +14,7 @@ async function list(req, res) {
 async function unreadCount(req, res) {
   const summary = await chatService.getUnreadSummary(req.user.id);
   return success(res, req, {
-    message: "Unread chat count",
+    message: "Số tin nhắn chưa đọc",
     data: summary
   });
 }
@@ -23,7 +23,7 @@ async function create(req, res) {
   const conversation = await chatService.createConversation(req.user.id, req.body);
   return success(res, req, {
     status: conversation.__created === false ? 200 : 201,
-    message: "Conversation ready",
+    message: "Cuộc trò chuyện đã sẵn sàng",
     data: { conversation }
   });
 }
@@ -31,7 +31,7 @@ async function create(req, res) {
 async function messages(req, res) {
   const result = await chatService.listMessages(req.user.id, req.params.id, req.query);
   return success(res, req, {
-    message: "Conversation messages",
+    message: "Tin nhắn trong cuộc trò chuyện",
     data: { messages: result.messages },
     meta: {
       nextCursor: result.nextCursor,
@@ -65,7 +65,7 @@ async function createMessage(req, res) {
     .catch(() => {});
   return success(res, req, {
     status: 201,
-    message: "Message created",
+    message: "Đã tạo tin nhắn",
     data: { message }
   });
 }

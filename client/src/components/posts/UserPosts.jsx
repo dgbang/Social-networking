@@ -20,7 +20,7 @@ function UserPosts({ userId, currentUser }) {
         if (active) setPosts(result.posts);
       })
       .catch((err) => {
-        if (active) setError(err.response?.data?.message || "Khong tai duoc posts.");
+        if (active) setError(err.response?.data?.message || "Không thể tải bài viết.");
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -40,13 +40,13 @@ function UserPosts({ userId, currentUser }) {
   return (
     <section className="grid gap-3.5">
       <div className="flex items-center justify-between gap-3">
-        <h2>Posts</h2>
+        <h2>Bài viết</h2>
       </div>
       {loading
         ? [0, 1].map((item) => <PostCardSkeleton key={item} />)
         : null}
       {error ? <p className="my-3.5 rounded-md bg-[#ffe9eb] p-3 text-sm text-[#9f1b2a]">{error}</p> : null}
-      {!loading && posts.length === 0 ? <section className="rounded-lg border border-[#c8d7e6] bg-white/95 p-4 shadow-[0_14px_34px_rgba(43,101,151,0.12)]">Chua co post nao de hien thi.</section> : null}
+      {!loading && posts.length === 0 ? <section className="rounded-lg border border-[#c8d7e6] bg-white/95 p-4 shadow-[0_14px_34px_rgba(43,101,151,0.12)]">Chưa có bài viết nào để hiển thị.</section> : null}
       {posts.map((post) => (
         <PostCard
           key={post.id}

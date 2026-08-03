@@ -12,10 +12,10 @@ function OutgoingCallModal({ call, onCancel }) {
             {receiver?.fullName?.charAt(0).toUpperCase() || "U"}
           </Avatar>
           <Box>
-            <Typography variant="h6">{receiver?.fullName || receiver?.username || "User"}</Typography>
-            <Typography variant="body2" className="!text-white/70">Dang goi...</Typography>
+            <Typography variant="h6">{receiver?.fullName || receiver?.username || "Người dùng"}</Typography>
+            <Typography variant="body2" className="!text-white/70">Đang gọi...</Typography>
           </Box>
-          <IconButton className="!h-14 !w-14 !bg-[#ef4444] !text-white hover:!bg-[#dc2626]" onClick={onCancel} aria-label="Cancel call">
+          <IconButton className="!h-14 !w-14 !bg-[#ef4444] !text-white hover:!bg-[#dc2626]" onClick={onCancel} aria-label="Hủy cuộc gọi">
             <CallEndRoundedIcon />
           </IconButton>
         </Box>

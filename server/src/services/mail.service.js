@@ -28,7 +28,7 @@ async function sendMail({ to, subject, html, text }) {
     });
 
     if (result?.error) {
-      const error = new Error(result.error.message || "Resend email failed");
+      const error = new Error("Không thể gửi email đặt lại mật khẩu");
       error.name = result.error.name || "ResendError";
       error.status = result.error.statusCode || result.error.status || 502;
       error.statusCode = error.status;
@@ -71,9 +71,9 @@ function sendResetPasswordEmail(user) {
   const link = buildLink(`/reset-password/${user.resetPasswordToken}`);
   return sendMail({
     to: user.email,
-    subject: "Reset your password",
-    text: `Reset your password: ${link}`,
-    html: `<p>Reset your password:</p><p><a href="${link}">${link}</a></p>`
+    subject: "Đặt lại mật khẩu của bạn",
+    text: `Đặt lại mật khẩu của bạn: ${link}`,
+    html: `<p>Đặt lại mật khẩu của bạn:</p><p><a href="${link}">${link}</a></p>`
   });
 }
 

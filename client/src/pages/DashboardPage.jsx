@@ -28,16 +28,16 @@ import ShareModal from "../components/posts/ShareModal.jsx";
 import StoryBar from "../components/stories/StoryBar.jsx";
 
 const sidebarItems = [
-  { label: "Friends", to: "/friends", icon: <PeopleAltRoundedIcon /> },
-  { label: "Groups", href: "#groups", icon: <GroupsRoundedIcon /> },
-  { label: "Marketplace", href: "#market", icon: <StorefrontRoundedIcon /> },
-  { label: "Events", href: "#events", icon: <CalendarMonthRoundedIcon /> },
-  { label: "Memories", href: "#memories", icon: <HistoryRoundedIcon /> },
+  { label: "Bạn bè", to: "/friends", icon: <PeopleAltRoundedIcon /> },
+  { label: "Nhóm", href: "#groups", icon: <GroupsRoundedIcon /> },
+  { label: "Chợ", href: "#market", icon: <StorefrontRoundedIcon /> },
+  { label: "Sự kiện", href: "#events", icon: <CalendarMonthRoundedIcon /> },
+  { label: "Kỷ niệm", href: "#memories", icon: <HistoryRoundedIcon /> },
 ];
 
 function DashboardPage() {
   const user = useSelector((state) => state.auth.user);
-  const displayName = user?.fullName || "John Doe";
+  const displayName = user?.fullName || "Người dùng";
   const [posts, setPosts] = useState([]);
   const [cursor, setCursor] = useState(null);
   const [hasMore, setHasMore] = useState(false);
@@ -62,7 +62,7 @@ function DashboardPage() {
       setCursor(result.nextCursor);
       setHasMore(Boolean(result.hasMore));
     } catch (err) {
-      setError(err.response?.data?.message || "Khong tai duoc feed.");
+      setError(err.response?.data?.message || "Không thể tải bảng tin.");
     } finally {
       setLoading(false);
     }
@@ -150,7 +150,7 @@ function DashboardPage() {
               {displayName}
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              View your profile
+              Xem trang cá nhân
             </Typography>
           </Box>
         </Stack>
@@ -183,7 +183,7 @@ function DashboardPage() {
         {!loading && posts.length === 0 ? (
           <Paper className="p-6 text-center" elevation={0}>
             <Typography color="text.secondary">
-              Chua co post nao trong feed.
+              Chưa có bài viết nào trong bảng tin.
             </Typography>
           </Paper>
         ) : null}
@@ -209,7 +209,7 @@ function DashboardPage() {
           ) : hasMore ? (
             " "
           ) : (
-            "End of feed"
+            "Đã xem hết bảng tin"
           )}
         </Box>
       </Stack>
@@ -229,18 +229,17 @@ function DashboardPage() {
             alignItems="center"
             className="mb-3"
           >
-            <Typography variant="h6">Sponsored</Typography>
+            <Typography variant="h6">Được tài trợ</Typography>
             <Button size="small">...</Button>
           </Stack>
           <Stack direction="row" spacing={1.5}>
             <Box className="h-20 w-24 rounded-lg bg-gradient-to-br from-sky-200 to-blue-500" />
             <Box>
               <Typography variant="subtitle2">
-                Facebook Stores lacilina?
+                Khám phá cửa hàng trực tuyến
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                The new daily add do the token and present in your blochs
-                section...
+                Khám phá các sản phẩm và ưu đãi mới dành cho bạn.
               </Typography>
             </Box>
           </Stack>
@@ -255,7 +254,7 @@ function DashboardPage() {
             justifyContent="space-between"
             className="mb-2"
           >
-            <Typography variant="h6">Contacts</Typography>
+            <Typography variant="h6">Người liên hệ</Typography>
           </Stack>
           <Stack spacing={1.25}>
             {[displayName, "John Doe", "Sarah Jones", "John Doe"].map(
@@ -277,7 +276,7 @@ function DashboardPage() {
                       {name}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      Online Friends
+                      Bạn bè đang trực tuyến
                     </Typography>
                   </Box>
                   <Box className="h-2.5 w-2.5 rounded-full bg-emerald-500" />

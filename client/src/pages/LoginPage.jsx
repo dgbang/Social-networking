@@ -28,7 +28,7 @@ function LoginPage() {
     return oauthError
       ? {
           type: "error",
-          message: "Dang nhap Google that bai. Vui long thu lai.",
+          message: "Đăng nhập Google thất bại. Vui lòng thử lại.",
         }
       : null;
   });
@@ -93,23 +93,23 @@ function LoginPage() {
             component="h1"
             className="!m-0 !text-[24px] !font-bold !leading-[24px] !text-[#101828]"
           >
-            Login to your account
+            Đăng nhập vào tài khoản
           </Typography>
         </Stack>
         <Box component="form" onSubmit={submit}>
           <AuthField
             label="Email"
             value={form.email}
-            placeholder="Email or Mobile Number"
+            placeholder="Email hoặc số điện thoại"
             onChange={(value) => update("email", value)}
             autoComplete="email"
             inputClassName="!h-[56px]"
           />
           <AuthField
-            label="Password"
+            label="Mật khẩu"
             type="password"
             value={form.password}
-            placeholder="Password"
+            placeholder="Mật khẩu"
             onChange={(value) => update("password", value)}
             autoComplete="current-password"
             inputClassName="!h-[56px]"
@@ -123,7 +123,7 @@ function LoginPage() {
           >
             <FormControlLabel
               control={<Checkbox defaultChecked size="small" />}
-              label="Remember Me"
+              label="Ghi nhớ đăng nhập"
               sx={{
                 m: 0,
                 height: 32,
@@ -142,7 +142,7 @@ function LoginPage() {
                 textDecoration: "none",
               }}
             >
-              Forgot Password?
+              Quên mật khẩu?
             </Link>
           </Stack>
           <Button
@@ -152,7 +152,7 @@ function LoginPage() {
             disabled={loading}
             className="!bg-[#0064E0] hover:!bg-[#0043CE]"
           >
-            {loading ? "Logging in..." : "Log In"}
+            {loading ? "Đang đăng nhập..." : "Đăng nhập"}
           </Button>
         </Box>
         <Button
@@ -163,13 +163,13 @@ function LoginPage() {
           onClick={() => navigate("/register")}
           className="!mt-3"
         >
-          Create New Account
+          Tạo tài khoản mới
         </Button>
         <Typography
           className="my-3.5 grid grid-cols-[1fr_auto_1fr] items-center gap-2.5 !text-[13px] !text-[#8290a3] before:h-px before:bg-[#e1e8f0] before:content-[''] after:h-px after:bg-[#e1e8f0] after:content-['']"
           component="div"
         >
-          or
+          hoặc
         </Typography>
         <Button
           fullWidth
@@ -178,7 +178,7 @@ function LoginPage() {
           onClick={loginWithGoogle}
           startIcon={<TravelExploreRoundedIcon />}
         >
-          Continue with Google
+          Tiếp tục với Google
         </Button>
         {notice?.message ? (
           <Alert severity={notice.type || "info"} className="!mt-3">
@@ -198,7 +198,7 @@ function LoginPage() {
           <div className="absolute left-[22px] top-5 h-7 w-6 border-b-4 border-l-4 border-[#0d4f86]" />
         </div>
         <div className="absolute bottom-[58px] right-[95px] grid h-12 w-[52px] place-items-center rounded-lg border-4 border-[#0d4f86] bg-[#7cbef1] text-[10px] font-black text-[#0d4f86]">
-          LOCK
+          KHÓA
         </div>
       </div>
     </Paper>

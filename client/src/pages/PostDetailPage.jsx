@@ -23,7 +23,7 @@ function PostDetailPage() {
         if (active) setPost(result);
       })
       .catch((err) => {
-        if (active) setError(err.response?.data?.message || "Khong tai duoc post.");
+        if (active) setError(err.response?.data?.message || "Không thể tải bài viết.");
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -41,7 +41,7 @@ function PostDetailPage() {
 
   if (loading) return <PostCardSkeleton />;
   if (error) return <section className="rounded-lg border border-[#c8d7e6] bg-white/95 p-4 text-[#9f1b2a] shadow-[0_14px_34px_rgba(43,101,151,0.12)]">{error}</section>;
-  if (!post) return <section className="rounded-lg border border-[#c8d7e6] bg-white/95 p-4 shadow-[0_14px_34px_rgba(43,101,151,0.12)]">Post da bi xoa.</section>;
+  if (!post) return <section className="rounded-lg border border-[#c8d7e6] bg-white/95 p-4 shadow-[0_14px_34px_rgba(43,101,151,0.12)]">Bài viết đã bị xóa.</section>;
 
   return (
     <section className="grid gap-3.5">

@@ -12,8 +12,8 @@ function createUploadError(error) {
   const isTimeout = error?.name === "TimeoutError" || error?.http_code === 499 || /timeout/i.test(error?.message || "");
   const uploadError = new Error(
     isTimeout
-      ? "Media upload timed out. Please try a smaller file or try again later."
-      : error?.message || "Media upload failed"
+      ? "Tải tệp đa phương tiện lên đã hết thời gian chờ. Vui lòng thử tệp nhỏ hơn hoặc thử lại sau."
+      : "Không thể tải tệp đa phương tiện lên"
   );
 
   uploadError.status = isTimeout ? 503 : 502;
@@ -24,7 +24,7 @@ function createUploadError(error) {
 
 function ensureCloudinaryConfigured() {
   if (!env.cloudinary.cloudName || !env.cloudinary.apiKey || !env.cloudinary.apiSecret) {
-    const error = new Error("Cloudinary is not configured");
+    const error = new Error("Cloudinary chưa được cấu hình");
     error.status = 503;
     error.code = "CLOUDINARY_NOT_CONFIGURED";
     throw error;

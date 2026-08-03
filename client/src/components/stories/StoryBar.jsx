@@ -28,7 +28,7 @@ function StoryBar({ user }) {
       const nextGroups = await getStoryFeed({ limit: 30 });
       setGroups(nextGroups);
     } catch (err) {
-      setError(err.response?.data?.message || "Khong tai duoc stories.");
+      setError(err.response?.data?.message || "Không thể tải tin.");
     } finally {
       setLoading(false);
     }
@@ -59,7 +59,7 @@ function StoryBar({ user }) {
         }))
       );
     } catch (err) {
-      setError(err.response?.data?.message || "Khong cap nhat duoc trang thai story.");
+      setError(err.response?.data?.message || "Không thể cập nhật trạng thái tin.");
     }
   }
 
@@ -73,7 +73,7 @@ function StoryBar({ user }) {
       const nextViewerGroup = nextGroups.find((group) => group.user.id === viewerGroup?.user?.id);
       setViewerGroup(nextViewerGroup || null);
     } catch (err) {
-      setError(err.response?.data?.message || "Khong xoa duoc story.");
+      setError(err.response?.data?.message || "Không thể xóa tin.");
     }
   }
 
@@ -81,8 +81,8 @@ function StoryBar({ user }) {
     <Paper className="overflow-hidden rounded-lg border border-[#dddfe2] !bg-white p-3 !shadow-[0_1px_2px_rgba(0,0,0,0.08)]" elevation={0}>
       <Stack direction="row" alignItems="center" justifyContent="space-between" className="mb-3">
         <Box>
-          <Typography variant="h6">Stories</Typography>
-          <Typography variant="body2" color="text.secondary">Khoanh khac 24h cua ban va ban be</Typography>
+          <Typography variant="h6">Tin</Typography>
+          <Typography variant="body2" color="text.secondary">Khoảnh khắc 24 giờ của bạn và bạn bè</Typography>
         </Box>
       </Stack>
 
@@ -98,15 +98,15 @@ function StoryBar({ user }) {
               <AddRoundedIcon fontSize="small" />
             </Box>
           </Box>
-          <Typography className={storyNameClass}>Create story</Typography>
+          <Typography className={storyNameClass}>Tạo tin</Typography>
         </ButtonBase>
 
         {loading ? <StoryTilesSkeleton /> : null}
 
         {!loading && groups.length === 0 ? (
           <Box className="grid min-w-[220px] content-center rounded-lg border border-dashed border-[rgba(24,119,242,0.28)] bg-[rgba(239,246,255,0.74)] p-4">
-            <Typography variant="subtitle2">Chua co story nao.</Typography>
-            <Typography variant="body2" color="text.secondary">Dang story dau tien de lam feed song dong hon.</Typography>
+            <Typography variant="subtitle2">Chưa có tin nào.</Typography>
+            <Typography variant="body2" color="text.secondary">Đăng tin đầu tiên để bảng tin sinh động hơn.</Typography>
           </Box>
         ) : null}
 

@@ -23,11 +23,11 @@ function CreateConversationModal({ open, busy = false, onClose, onCreate }) {
     event.preventDefault();
     setError("");
     if (type === "private" && selected.length !== 1) {
-      setError("Private chat can chon dung 1 nguoi ban.");
+      setError("Đoạn chat riêng cần chọn đúng một người bạn.");
       return;
     }
     if (type === "group" && (selected.length < 2 || !name.trim())) {
-      setError("Group chat can ten nhom va it nhat 2 thanh vien.");
+      setError("Nhóm chat cần có tên và ít nhất hai thành viên.");
       return;
     }
     try {
@@ -37,7 +37,7 @@ function CreateConversationModal({ open, busy = false, onClose, onCreate }) {
       setType("private");
       onClose();
     } catch (err) {
-      setError(err.response?.data?.message || "Khong tao duoc conversation.");
+      setError(err.response?.data?.message || "Không thể tạo cuộc trò chuyện.");
     }
   }
 
@@ -47,21 +47,21 @@ function CreateConversationModal({ open, busy = false, onClose, onCreate }) {
         <DialogContent className="space-y-4">
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Box>
-              <Typography variant="h6">New chat</Typography>
-              <Typography variant="body2" color="text.secondary">Chon ban be de bat dau conversation.</Typography>
+              <Typography variant="h6">Cuộc trò chuyện mới</Typography>
+              <Typography variant="body2" color="text.secondary">Chọn bạn bè để bắt đầu trò chuyện.</Typography>
             </Box>
-            <IconButton type="button" onClick={onClose}>
+            <IconButton type="button" onClick={onClose} aria-label="Đóng">
               <CloseRoundedIcon />
             </IconButton>
           </Stack>
 
           <RadioGroup row value={type} onChange={(event) => setType(event.target.value)}>
-            <FormControlLabel value="private" control={<Radio />} label="Private" />
-            <FormControlLabel value="group" control={<Radio />} label="Group" />
+            <FormControlLabel value="private" control={<Radio />} label="Riêng tư" />
+            <FormControlLabel value="group" control={<Radio />} label="Nhóm" />
           </RadioGroup>
 
           {type === "group" ? (
-            <TextField value={name} onChange={(event) => setName(event.target.value)} label="Group name" fullWidth />
+            <TextField value={name} onChange={(event) => setName(event.target.value)} label="Tên nhóm" fullWidth />
           ) : null}
 
           <Box className="grid max-h-[280px] overflow-y-auto rounded-lg border border-slate-200 p-2">
@@ -79,12 +79,12 @@ function CreateConversationModal({ open, busy = false, onClose, onCreate }) {
                 }
               />
             ))}
-            {friends.length === 0 ? <Typography color="text.secondary">Chua co friends de chat.</Typography> : null}
+            {friends.length === 0 ? <Typography color="text.secondary">Chưa có bạn bè để trò chuyện.</Typography> : null}
           </Box>
 
           {error ? <Alert severity="error">{error}</Alert> : null}
           <Button type="submit" variant="contained" disabled={busy}>
-            {busy ? "Dang tao..." : "Create"}
+            {busy ? "Đang tạo..." : "Tạo"}
           </Button>
         </DialogContent>
       </Box>

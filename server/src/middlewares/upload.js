@@ -15,7 +15,7 @@ const uploader = multer({
   },
   fileFilter(req, file, cb) {
     if (!file.mimetype || !file.mimetype.startsWith("image/")) {
-      const error = new Error("Only image files are allowed");
+      const error = new Error("Chỉ chấp nhận tệp hình ảnh");
       error.code = "INVALID_UPLOAD_TYPE";
       return cb(error);
     }
@@ -32,14 +32,14 @@ function handleUpload(fieldName) {
         return fail(res, req, {
           status: 400,
           code: "UPLOAD_TOO_LARGE",
-          message: "Image must be 5MB or smaller"
+          message: "Hình ảnh phải có dung lượng không quá 5 MB"
         });
       }
 
       return fail(res, req, {
         status: 400,
         code: error.code || "INVALID_UPLOAD",
-        message: error.message || "Invalid upload"
+        message: error.code === "INVALID_UPLOAD_TYPE" ? error.message : "Tệp tải lên không hợp lệ"
       });
     });
   };
@@ -53,7 +53,7 @@ const mediaUploader = multer({
   },
   fileFilter(req, file, cb) {
     if (!isAllowedMedia(file)) {
-      const error = new Error("Only image or video files are allowed");
+      const error = new Error("Chỉ chấp nhận tệp hình ảnh hoặc video");
       error.code = "INVALID_UPLOAD_TYPE";
       return cb(error);
     }
@@ -70,7 +70,7 @@ function handleMediaUpload(fieldName = "media") {
         return fail(res, req, {
           status: 400,
           code: "UPLOAD_TOO_LARGE",
-          message: "Media must be 5MB or smaller"
+          message: "Tệp đa phương tiện phải có dung lượng không quá 5 MB"
         });
       }
 
@@ -78,14 +78,14 @@ function handleMediaUpload(fieldName = "media") {
         return fail(res, req, {
           status: 400,
           code: "UPLOAD_TOO_MANY_FILES",
-          message: `Post can include up to ${maxPostMediaFiles} media files`
+          message: `Mỗi bài viết được chứa tối đa ${maxPostMediaFiles} tệp đa phương tiện`
         });
       }
 
       return fail(res, req, {
         status: 400,
         code: error.code || "INVALID_UPLOAD",
-        message: error.message || "Invalid upload"
+        message: error.code === "INVALID_UPLOAD_TYPE" ? error.message : "Tệp tải lên không hợp lệ"
       });
     });
   };

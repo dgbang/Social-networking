@@ -5,6 +5,13 @@ const toPublicUser = require("../utils/publicUser");
 const MESSAGE_LIMIT_MAX = 50;
 const CONVERSATION_LIMIT_MAX = 50;
 const MESSAGE_CONTENT_MAX = 5000;
+const CALL_CONTENT_BY_STATUS = {
+  ended: "Cuộc gọi đã kết thúc",
+  rejected: "Cuộc gọi bị từ chối",
+  missed: "Cuộc gọi nhỡ",
+  canceled: "Cuộc gọi đã bị hủy",
+  disconnected: "Cuộc gọi bị mất kết nối"
+};
 
 function createError(status, code, message) {
   const error = new Error(message);
@@ -21,6 +28,14 @@ function normalizeLimit(limit, fallback, max) {
 function normalizeContent(content) {
   if (content === undefined || content === null) return "";
   return String(content).trim();
+}
+
+function serializeMessageContent(message) {
+  if (!message || message.isDeleted) return null;
+  if (message.type === "call") {
+    return CALL_CONTENT_BY_STATUS[message.media?.status] || "Cuộc gọi";
+  }
+  return message.content;
 }
 
 function markCreateResult(conversation, created) {
@@ -85,7 +100,7 @@ async function areFriends(userA, userB) {
 async function ensureFriends(currentUserId, memberIds) {
   for (const memberId of memberIds) {
     if (!(await areFriends(currentUserId, memberId))) {
-      throw createError(403, "CHAT_FRIEND_REQUIRED", "Chat members must be accepted friends");
+      throw createError(403, "CHAT_FRIEND_REQUIRED", "Các thành viên trò chuyện phải là bạn bè đã chấp nhận kết bạn");
     }
   }
 }
@@ -96,7 +111,7 @@ async function ensureMember(conversationId, userId, options = {}) {
     transaction: options.transaction
   });
   if (!member) {
-    throw createError(403, "CONVERSATION_FORBIDDEN", "You are not a member of this conversation");
+    throw createError(403, "CONVERSATION_FORBIDDEN", "Bạn không phải là thành viên của cuộc trò chuyện này");
   }
   return member;
 }
@@ -127,7 +142,7 @@ function serializeMessage(message) {
     conversationId: message.conversationId,
     senderId: message.senderId,
     replyToId: message.replyToId,
-    content: message.isDeleted ? null : message.content,
+    content: serializeMessageContent(message),
     media: message.isDeleted ? null : message.media,
     type: message.type,
     isDeleted: message.isDeleted,
@@ -137,7 +152,7 @@ function serializeMessage(message) {
       ? {
           id: message.replyTo.id,
           senderId: message.replyTo.senderId,
-          content: message.replyTo.isDeleted ? null : message.replyTo.content,
+          content: serializeMessageContent(message.replyTo),
           isDeleted: message.replyTo.isDeleted,
           sender: toPublicUser(message.replyTo.sender, { includeEmail: false })
         }
@@ -195,7 +210,7 @@ async function serializeConversation(conversation, userId) {
   return {
     id: conversation.id,
     type: conversation.type,
-    name: conversation.type === "private" ? privateOther?.fullName || privateOther?.username || "Private chat" : conversation.name,
+    name: conversation.type === "private" ? privateOther?.fullName || privateOther?.username || "Cuộc trò chuyện riêng tư" : conversation.name,
     avatar: conversation.type === "private" ? privateOther?.avatar || null : conversation.avatar,
     adminId: conversation.adminId,
     members,
@@ -248,12 +263,12 @@ async function createConversation(userId, payload) {
   const memberIds = Array.from(new Set(payload.memberIds || [])).filter((id) => id !== userId);
 
   if (!["private", "group"].includes(type)) {
-    throw createError(400, "INVALID_CONVERSATION_TYPE", "Invalid conversation type");
+    throw createError(400, "INVALID_CONVERSATION_TYPE", "Loại cuộc trò chuyện không hợp lệ");
   }
 
   if (type === "private") {
     if (memberIds.length !== 1) {
-      throw createError(400, "PRIVATE_CONVERSATION_TARGET_REQUIRED", "Private conversation needs one target member");
+      throw createError(400, "PRIVATE_CONVERSATION_TARGET_REQUIRED", "Cuộc trò chuyện riêng tư cần một người nhận");
     }
     await ensureFriends(userId, memberIds);
     const existing = await findPrivateConversation(userId, memberIds[0]);
@@ -264,10 +279,10 @@ async function createConversation(userId, payload) {
 
   if (type === "group") {
     if (memberIds.length < 2) {
-      throw createError(400, "GROUP_MEMBERS_REQUIRED", "Group conversation needs at least two other members");
+      throw createError(400, "GROUP_MEMBERS_REQUIRED", "Cuộc trò chuyện nhóm cần ít nhất hai thành viên khác");
     }
     if (!normalizeContent(payload.name)) {
-      throw createError(400, "GROUP_NAME_REQUIRED", "Group name is required");
+      throw createError(400, "GROUP_NAME_REQUIRED", "Tên nhóm là bắt buộc");
     }
     await ensureFriends(userId, memberIds);
   }
@@ -299,7 +314,7 @@ async function createConversation(userId, payload) {
 async function listMessages(userId, conversationId, { cursor, limit } = {}) {
   await ensureMember(conversationId, userId);
   if (cursor && Number.isNaN(new Date(cursor).getTime())) {
-    throw createError(400, "INVALID_CURSOR", "Invalid cursor");
+    throw createError(400, "INVALID_CURSOR", "Con trỏ không hợp lệ");
   }
   const normalizedLimit = normalizeLimit(limit, 30, MESSAGE_LIMIT_MAX);
   const rows = await Message.findAll({
@@ -328,13 +343,13 @@ async function createMessage(userId, payload) {
   const content = normalizeContent(payload.content);
   const replyToId = payload.replyToId || null;
   if (!conversationId) {
-    throw createError(400, "CONVERSATION_REQUIRED", "Conversation is required");
+    throw createError(400, "CONVERSATION_REQUIRED", "Cuộc trò chuyện là bắt buộc");
   }
   if (!content) {
-    throw createError(400, "MESSAGE_CONTENT_REQUIRED", "Message content is required");
+    throw createError(400, "MESSAGE_CONTENT_REQUIRED", "Nội dung tin nhắn là bắt buộc");
   }
   if (content.length > MESSAGE_CONTENT_MAX) {
-    throw createError(400, "MESSAGE_CONTENT_TOO_LONG", "Message content is too long");
+    throw createError(400, "MESSAGE_CONTENT_TOO_LONG", "Nội dung tin nhắn quá dài");
   }
 
   await ensureMember(conversationId, userId);
@@ -342,7 +357,7 @@ async function createMessage(userId, payload) {
   if (replyToId) {
     const replyTo = await Message.findOne({ where: { id: replyToId, conversationId } });
     if (!replyTo) {
-      throw createError(404, "REPLY_MESSAGE_NOT_FOUND", "Reply message not found");
+      throw createError(404, "REPLY_MESSAGE_NOT_FOUND", "Không tìm thấy tin nhắn được trả lời");
     }
   }
 
@@ -373,11 +388,11 @@ async function createMessage(userId, payload) {
 async function deleteMessage(userId, messageId) {
   const message = await Message.findByPk(messageId, { include: messageIncludes() });
   if (!message) {
-    throw createError(404, "MESSAGE_NOT_FOUND", "Message not found");
+    throw createError(404, "MESSAGE_NOT_FOUND", "Không tìm thấy tin nhắn");
   }
   await ensureMember(message.conversationId, userId);
   if (message.senderId !== userId) {
-    throw createError(403, "MESSAGE_DELETE_FORBIDDEN", "You cannot delete this message");
+    throw createError(403, "MESSAGE_DELETE_FORBIDDEN", "Bạn không thể xóa tin nhắn này");
   }
   await message.update({
     content: null,

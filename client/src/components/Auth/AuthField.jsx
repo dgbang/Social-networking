@@ -13,6 +13,7 @@ function AuthField({
   placeholder = label,
   className = "",
   inputClassName = "",
+  shrinkLabel = false,
 }) {
   return (
     <TextField
@@ -29,6 +30,7 @@ function AuthField({
         input: {
           className: cx("!rounded-lg !bg-white", inputClassName),
         },
+        inputLabel: shrinkLabel ? { shrink: true } : undefined,
         htmlInput: {
           className: "!text-[15px]",
         },

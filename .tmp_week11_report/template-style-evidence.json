@@ -1,0 +1,170 @@
+{
+  "input": "D:\\PROJECT_2026\\Social-networking\\reports\\bao_cao_phase_7_notifications.docx",
+  "fonts_by_char_count": {
+    "Times New Roman": 11019
+  },
+  "direct_run_formatting_runs": 93,
+  "direct_paragraph_formatting_paragraphs": 90,
+  "heading_like_paragraphs_not_heading_style": [
+    {
+      "para_index": 1,
+      "text": "B\u00c1O C\u00c1O PHASE 7",
+      "style": "Normal"
+    },
+    {
+      "para_index": 2,
+      "text": "TH\u00d4NG B\u00c1O TRONG \u1ee8NG D\u1ee4NG",
+      "style": "Normal"
+    },
+    {
+      "para_index": 3,
+      "text": "D\u1ef1 \u00e1n: Social Networking Promax",
+      "style": "Normal"
+    },
+    {
+      "para_index": 22,
+      "text": "1. M\u1ee5c ti\u00eau c\u1ee7a Phase 7",
+      "style": "Normal"
+    },
+    {
+      "para_index": 32,
+      "text": "2. K\u1ebft qu\u1ea3 \u0111\u00e3 ho\u00e0n th\u00e0nh",
+      "style": "Normal"
+    },
+    {
+      "para_index": 46,
+      "text": "3. Nh\u1eefng ki\u1ebfn th\u1ee9c \u0111\u00e3 h\u1ecdc \u0111\u01b0\u1ee3c",
+      "style": "Normal"
+    },
+    {
+      "para_index": 48,
+      "text": "3.1. Hi\u1ec3u vai tr\u00f2 c\u1ee7a m\u1ed9t notification service trung t\u00e2m",
+      "style": "Normal"
+    },
+    {
+      "para_index": 51,
+      "text": "3.2. H\u1ecdc c\u00e1ch thi\u1ebft k\u1ebf d\u1eef li\u1ec7u v\u00e0 ph\u00e2n trang cho th\u00f4ng b\u00e1o",
+      "style": "Normal"
+    },
+    {
+      "para_index": 55,
+      "text": "3.3. K\u1ebft h\u1ee3p d\u1eef li\u1ec7u l\u01b0u tr\u1eef v\u1edbi c\u1eadp nh\u1eadt th\u1eddi gian th\u1ef1c",
+      "style": "Normal"
+    },
+    {
+      "para_index": 58,
+      "text": "3.4. H\u1ecdc c\u00e1ch t\u00edch h\u1ee3p s\u1ef1 ki\u1ec7n qua nhi\u1ec1u mi\u1ec1n nghi\u1ec7p v\u1ee5",
+      "style": "Normal"
+    },
+    {
+      "para_index": 61,
+      "text": "3.5. H\u1ecdc c\u00e1ch qu\u1ea3n l\u00fd giao di\u1ec7n th\u00f4ng b\u00e1o \u1edf m\u1ee9c to\u00e0n \u1ee9ng d\u1ee5ng",
+      "style": "Normal"
+    },
+    {
+      "para_index": 64,
+      "text": "3.6. Hi\u1ec3u r\u00f5 h\u01a1n v\u1ec1 quy\u1ec1n s\u1edf h\u1eefu v\u00e0 d\u1eef li\u1ec7u c\u00f4ng khai",
+      "style": "Normal"
+    },
+    {
+      "para_index": 67,
+      "text": "3.7. H\u1ecdc c\u00e1ch \u0111\u00e1nh gi\u00e1 \u0111\u00fang ph\u1ea1m vi ki\u1ec3m th\u1eed",
+      "style": "Normal"
+    },
+    {
+      "para_index": 70,
+      "text": "3.8. H\u1ecdc c\u00e1ch \u01b0u ti\u00ean Must-have v\u00e0 Stretch",
+      "style": "Normal"
+    },
+    {
+      "para_index": 72,
+      "text": "4. Lu\u1ed3ng ho\u1ea1t \u0111\u1ed9ng ch\u00ednh",
+      "style": "Normal"
+    },
+    {
+      "para_index": 81,
+      "text": "5. Kh\u00f3 kh\u0103n v\u00e0 c\u00e1ch x\u1eed l\u00fd",
+      "style": "Normal"
+    },
+    {
+      "para_index": 86,
+      "text": "6. M\u1ee9c \u0111\u1ed9 ho\u00e0n thi\u1ec7n",
+      "style": "Normal"
+    },
+    {
+      "para_index": 88,
+      "text": "7. H\u1ea1n ch\u1ebf hi\u1ec7n t\u1ea1i v\u00e0 h\u01b0\u1edbng ph\u00e1t tri\u1ec3n",
+      "style": "Normal"
+    },
+    {
+      "para_index": 95,
+      "text": "8. Bi\u1ec3u \u0111\u1ed3 use case v\u00e0 sequence",
+      "style": "Normal"
+    },
+    {
+      "para_index": 101,
+      "text": "9. K\u1ebft lu\u1eadn",
+      "style": "Normal"
+    }
+  ],
+  "examples": {
+    "direct_paragraph_formatting": [
+      {
+        "para_index": 1,
+        "text": "B\u00c1O C\u00c1O PHASE 7",
+        "style": "Normal"
+      },
+      {
+        "para_index": 2,
+        "text": "TH\u00d4NG B\u00c1O TRONG \u1ee8NG D\u1ee4NG",
+        "style": "Normal"
+      },
+      {
+        "para_index": 3,
+        "text": "D\u1ef1 \u00e1n: Social Networking Promax",
+        "style": "Normal"
+      },
+      {
+        "para_index": 12,
+        "text": "Sinh vi\u00ean: \u0110\u01b0\u1eddng Gia B\u1eb1ng ........................................................",
+        "style": "Normal"
+      },
+      {
+        "para_index": 13,
+        "text": "M\u00e3 sinh vi\u00ean: 22026537....................................................",
+        "style": "Normal"
+      }
+    ],
+    "direct_run_formatting": [
+      {
+        "para_index": 1,
+        "run_text": "B\u00c1O C\u00c1O PHASE 7",
+        "style": "Normal"
+      },
+      {
+        "para_index": 2,
+        "run_text": "TH\u00d4NG B\u00c1O TRONG \u1ee8NG D\u1ee4NG",
+        "style": "Normal"
+      },
+      {
+        "para_index": 3,
+        "run_text": "D\u1ef1 \u00e1n: Social Networking Promax",
+        "style": "Normal"
+      },
+      {
+        "para_index": 12,
+        "run_text": "Sinh vi\u00ean: \u0110\u01b0\u1eddng Gia B\u1eb1ng ......................................................",
+        "style": "Normal"
+      },
+      {
+        "para_index": 13,
+        "run_text": "M\u00e3 sinh vi\u00ean: 22026537....................................................",
+        "style": "Normal"
+      }
+    ]
+  },
+  "notes": [
+    "Direct formatting is not always wrong, but it often causes inconsistent output when templates change.",
+    "Heading-like paragraphs not using Heading styles can break TOC and accessibility."
+  ]
+}

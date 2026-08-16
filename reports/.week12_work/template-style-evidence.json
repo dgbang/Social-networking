@@ -1,0 +1,170 @@
+{
+  "input": "D:\\PROJECT_2026\\Social-networking\\reports\\bao_cao_tuan_11_ui_ai_kiem_thu.docx",
+  "fonts_by_char_count": {
+    "Times New Roman": 10762
+  },
+  "direct_run_formatting_runs": 88,
+  "direct_paragraph_formatting_paragraphs": 88,
+  "heading_like_paragraphs_not_heading_style": [
+    {
+      "para_index": 3,
+      "text": "B\u00c1O C\u00c1O TU\u1ea6N 11",
+      "style": "Normal"
+    },
+    {
+      "para_index": 4,
+      "text": "HO\u00c0N THI\u1ec6N GIAO DI\u1ec6N, T\u00cdCH H\u1ee2P AI\nV\u00c0 KI\u1ec2M TH\u1eec H\u1ec6 TH\u1ed0NG",
+      "style": "Normal"
+    },
+    {
+      "para_index": 5,
+      "text": "D\u1ef1 \u00e1n: Social Networking Promax",
+      "style": "Normal"
+    },
+    {
+      "para_index": 25,
+      "text": "1. M\u1ee5c ti\u00eau c\u1ee7a tu\u1ea7n 11",
+      "style": "Normal"
+    },
+    {
+      "para_index": 32,
+      "text": "2. K\u1ebft qu\u1ea3 \u0111\u00e3 th\u1ef1c hi\u1ec7n",
+      "style": "Normal"
+    },
+    {
+      "para_index": 33,
+      "text": "2.1. C\u1ea3i thi\u1ec7n v\u00e0 \u0111\u1ed3ng b\u1ed9 giao di\u1ec7n",
+      "style": "Normal"
+    },
+    {
+      "para_index": 40,
+      "text": "2.2. T\u00edch h\u1ee3p AI g\u1ee3i \u00fd caption",
+      "style": "Normal"
+    },
+    {
+      "para_index": 49,
+      "text": "2.3. Ki\u1ec3m th\u1eed v\u00e0 r\u00e0 so\u00e1t h\u1ed3i quy",
+      "style": "Normal"
+    },
+    {
+      "para_index": 53,
+      "text": "3. Nh\u1eefng ki\u1ebfn th\u1ee9c \u0111\u00e3 h\u1ecdc \u0111\u01b0\u1ee3c",
+      "style": "Normal"
+    },
+    {
+      "para_index": 54,
+      "text": "3.1. UI \u0111\u1eb9p ph\u1ea3i \u0111i c\u00f9ng t\u00ednh nh\u1ea5t qu\u00e1n",
+      "style": "Normal"
+    },
+    {
+      "para_index": 56,
+      "text": "3.2. C\u1ea3i thi\u1ec7n UI c\u1ea7n ki\u1ec3m so\u00e1t h\u1ed3i quy",
+      "style": "Normal"
+    },
+    {
+      "para_index": 58,
+      "text": "3.3. AI n\u00ean l\u00e0 c\u00f4ng c\u1ee5 h\u1ed7 tr\u1ee3 thay v\u00ec quy\u1ebft \u0111\u1ecbnh thay ng\u01b0\u1eddi d\u00f9ng",
+      "style": "Normal"
+    },
+    {
+      "para_index": 60,
+      "text": "3.4. C\u1ea7n t\u00e1ch l\u1edbp t\u00edch h\u1ee3p AI kh\u1ecfi giao di\u1ec7n",
+      "style": "Normal"
+    },
+    {
+      "para_index": 62,
+      "text": "3.5. Ki\u1ec3m th\u1eed t\u1ef1 \u0111\u1ed9ng v\u00e0 ki\u1ec3m th\u1eed th\u1ee7 c\u00f4ng b\u1ed5 sung cho nhau",
+      "style": "Normal"
+    },
+    {
+      "para_index": 64,
+      "text": "4. Lu\u1ed3ng ho\u1ea1t \u0111\u1ed9ng c\u1ee7a t\u00ednh n\u0103ng g\u1ee3i \u00fd caption",
+      "style": "Normal"
+    },
+    {
+      "para_index": 72,
+      "text": "5. Kh\u00f3 kh\u0103n v\u00e0 c\u00e1ch x\u1eed l\u00fd",
+      "style": "Normal"
+    },
+    {
+      "para_index": 77,
+      "text": "6. M\u1ee9c \u0111\u1ed9 ho\u00e0n thi\u1ec7n",
+      "style": "Normal"
+    },
+    {
+      "para_index": 79,
+      "text": "7. H\u1ea1n ch\u1ebf hi\u1ec7n t\u1ea1i v\u00e0 h\u01b0\u1edbng ph\u00e1t tri\u1ec3n",
+      "style": "Normal"
+    },
+    {
+      "para_index": 87,
+      "text": "8. Bi\u1ec3u \u0111\u1ed3 lu\u1ed3ng AI v\u00e0 quy tr\u00ecnh ki\u1ec3m th\u1eed",
+      "style": "Normal"
+    },
+    {
+      "para_index": 94,
+      "text": "9. K\u1ebft lu\u1eadn",
+      "style": "Normal"
+    }
+  ],
+  "examples": {
+    "direct_paragraph_formatting": [
+      {
+        "para_index": 3,
+        "text": "B\u00c1O C\u00c1O TU\u1ea6N 11",
+        "style": "Normal"
+      },
+      {
+        "para_index": 4,
+        "text": "HO\u00c0N THI\u1ec6N GIAO DI\u1ec6N, T\u00cdCH H\u1ee2P AI\nV\u00c0 KI\u1ec2M TH\u1eec H\u1ec6 TH\u1ed0NG",
+        "style": "Normal"
+      },
+      {
+        "para_index": 5,
+        "text": "D\u1ef1 \u00e1n: Social Networking Promax",
+        "style": "Normal"
+      },
+      {
+        "para_index": 14,
+        "text": "Sinh vi\u00ean: \u0110\u01b0\u1eddng Gia B\u1eb1ng ........................................................",
+        "style": "Normal"
+      },
+      {
+        "para_index": 15,
+        "text": "M\u00e3 sinh vi\u00ean: 22026537............................................................",
+        "style": "Normal"
+      }
+    ],
+    "direct_run_formatting": [
+      {
+        "para_index": 3,
+        "run_text": "B\u00c1O C\u00c1O TU\u1ea6N 11",
+        "style": "Normal"
+      },
+      {
+        "para_index": 4,
+        "run_text": "HO\u00c0N THI\u1ec6N GIAO DI\u1ec6N, T\u00cdCH H\u1ee2P AI\nV\u00c0 KI\u1ec2M TH\u1eec H\u1ec6 TH\u1ed0NG",
+        "style": "Normal"
+      },
+      {
+        "para_index": 5,
+        "run_text": "D\u1ef1 \u00e1n: Social Networking Promax",
+        "style": "Normal"
+      },
+      {
+        "para_index": 14,
+        "run_text": "Sinh vi\u00ean: \u0110\u01b0\u1eddng Gia B\u1eb1ng ......................................................",
+        "style": "Normal"
+      },
+      {
+        "para_index": 15,
+        "run_text": "M\u00e3 sinh vi\u00ean: 22026537..........................................................",
+        "style": "Normal"
+      }
+    ]
+  },
+  "notes": [
+    "Direct formatting is not always wrong, but it often causes inconsistent output when templates change.",
+    "Heading-like paragraphs not using Heading styles can break TOC and accessibility."
+  ]
+}
